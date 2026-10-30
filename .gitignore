@@ -1,5 +1,15 @@
 .venv/
+DAY1.venv/
 DAY2.venv/
+DAY3.venv/
+DAY4.venv/
+DAY5.venv/
+DAY6.venv/
+DAY7.venv/
+DAY8.venv/
+DAY9.venv/
+DAY10.venv/
+
 .python-env/
 **/node_modules/
 
