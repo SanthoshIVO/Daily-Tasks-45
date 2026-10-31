@@ -15,4 +15,5 @@ DAY10.venv/
 
 .__pycache__
 .postman
-E:\Ivoyant\WEEK1\DAY4\FastAPI-ToDo\postman
+postman/
+.vscode/
