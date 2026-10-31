@@ -1,0 +1,51 @@
+Santhosh S S
+Data Analyst — Python Developer — SQL — Power BI
++91 81971 33537 | santhutsk3@gmail.com | LinkedIn | GitHub
+Professional Summary:
+Detail-oriented Data Analyst aspirant and Electronics & Communication Engineering undergraduate (2026) with
+strong skills in Python, SQL, Data Analysis, Machine Learning, and Business Intelligence. Experienced in data
+cleaning, exploratory data analysis (EDA), statistical analysis, dashboard development, database querying, and
+reporting through academic projects and professional training. Proficient in transforming raw data into actionable
+insights using Python, Excel, SQL, Power BI, and visualization tools to support data-driven decision making.
+Technical Skills & Certifications:
+Programming: Python, SQL, C++.
+Generative AI: LLMs, Text Normalization, NLP, Chunking, RAGs, Vector DB, Pipeline.
+Data Analysis: Data Cleaning, Data Transformation, EDA, Statistical Analysis, Data Validation, Data Modeling, KPI
+Analysis, Business Reporting
+Python Libraries: Pandas, NumPy, Matplotlib, Seaborn, Scikit-Learn, TensorFlow, OpenCV
+Machine Learning: Regression, Classification, Feature Engineering, Model Evaluation, Predictive Analytics (Beginner)
+Visualization & BI: Power BI, Tableau (Beginner), Excel, Pivot Tables, VLOOKUP, XLOOKUP, Dashboards, Data
+Visualization
+Databases: PostgreSQL, Oracle SQL, SQL Joins, Aggregations, Stored Queries, Relational Databases , Snowflake.
+Tools: Git, GitHub, Docker, Linux, VS Code, PyCharm, Jupyter Notebook
+Certifications: NPTEL Joy of Computing using Python (2023) , Django Framework Udemy (2025).
+Professional Training: QSpiders – Python Data Science (Ongoing)
+Work Experience:
+QSpiders Bengaluru, Karnataka
+Python Data Science Trainee Aug 2025 – Present
+– Performed data cleaning, preprocessing, exploratory data analysis (EDA), and visualization on structured datasets.
+– Built machine learning models using Scikit-Learn for classification and regression tasks.
+– Worked with SQL databases for querying, aggregation, reporting, and business data analysis.
+– Created dashboards and reports using Power BI, Excel, and Python visualization libraries.
+Fudo Technologies Pvt Limited. Bengaluru, Karnataka
+Odoo ERP Developer Intern Jul 2025 – Aug 2025
+– Worked extensively with PostgreSQL databases, SQL queries, data extraction, and backend reporting workflows.
+– Developed ERP customizations involving data validation, automation, and business process optimization.
+– Used Docker and Linux environments for deployment, testing, and database management.
+Projects:
+Sales Performance Dashboard and Data Analysis
+Python, SQL, Power BI, Excel 2025
+– Performed exploratory data analysis on sales datasets to identify trends, customer behavior, and revenue growth
+opportunities.
+– Developed KPI dashboards and reports using Power BI, SQL, Pandas, and Excel for business decision support.
+Fruit Spoilage Detection System
+Python, TensorFlow, Data Analytics 2025
+– Collected, cleaned, and analyzed sensor and image datasets for predictive spoilage detection.
+– Applied machine learning and visualization techniques to identify spoilage patterns and improve prediction accuracy.
+Machine Learning Based Tree Detection System
+YOLO, Python, OpenCV 2025
+– Prepared datasets, performed preprocessing, model training, testing, and evaluation using object detection techniques.
+– Analyzed model performance metrics and optimized inference accuracy using Python-based workflows.
+Education:
+G M Institute of Technology Davangere, Karnataka
+B.E. Electronics and Communication Engineering – CGPA: 7.7/10 2022 – 2026

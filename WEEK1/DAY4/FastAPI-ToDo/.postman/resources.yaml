@@ -1,0 +1,8 @@
+workspace:
+  id: 47a73f50-123a-4698-82c3-98f49549daee
+cloudResources:
+  collections:
+    ../postman/collections/todoapp - user api's: 57735961-80a99465-f654-40c1-8a76-bde6b25b2e15
+    ../postman/collections/todoapp - DB apis: 57735961-7fb6f58f-bf48-4f39-8497-438a1fed1281
+    ../postman/collections/fast_api_products_practice: 57735961-68d860c9-f444-4e9c-ac4c-b69b94c31172
+    ../postman/collections/weather api: 57735961-2cca05c4-aec9-4bcf-9d4d-6733a28af1d6
