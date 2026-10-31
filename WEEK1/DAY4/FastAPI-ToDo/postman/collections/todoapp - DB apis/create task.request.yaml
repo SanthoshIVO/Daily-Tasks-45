@@ -1,0 +1,17 @@
+$kind: http-request
+url: 127.0.0.1:8000/tasks/create
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"title\": \"create notes\",\r
+
+    \    \"is_completed\": true\r
+
+    \    \"description\": \"i want to create fastapi notes\"\r
+
+    \    \r
+
+    }"
+order: 1000

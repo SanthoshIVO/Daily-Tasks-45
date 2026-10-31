@@ -2,26 +2,23 @@ from src.tasks.dtos import TaskSchema
 from sqlalchemy.orm import session
 from src.tasks.models import TaskModel
 from fastapi import HTTPException
+from src.user.models import UserModel
 
-
-
-def create_task(body:TaskSchema, db:session):
+def create_task(body:TaskSchema, db:session, user:UserModel):
     data = body.model_dump()
     new_task = TaskModel(title = data["title"], 
                          description = data["description"],
-                         is_completed = data["is_completed"])
+                         is_completed = data["is_completed"],
+                         user_id = user.id)
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
 
-    return {"status":"task created successfully..." , "data":new_task}
+    return new_task
 
-def get_tasks(db:session):
-    tasks = db.query(TaskModel).all()
-    
-    return {
-        "status":"All tasks","data":tasks
-    }
+def get_tasks(db:session, user:UserModel):
+    tasks = db.query(TaskModel).filter(TaskModel.user_id == user.id).all()
+    return tasks
 
 
 def get_one_task(task_id:int,db:session):
@@ -29,15 +26,18 @@ def get_one_task(task_id:int,db:session):
     if not one_task:
         raise HTTPException(404, detail= "task id is incorrect")
 
-    return{
-        "status":"task fetchded successfully", "data":one_task
-    }
+    return one_task
 
 
-def update_task(body:TaskSchema, task_id:int, db:session):
-    one_task = db.query(TaskModel).get(task_id)
+def update_task(body:TaskSchema, task_id:int, db:session, user:UserModel):
+    one_task:TaskModel = db.query(TaskModel).get(task_id)
     if not one_task:
         raise HTTPException(404, detail= "task id is incorrect")
+    if one_task.user_id != user.id:
+        raise HTTPException(404, detail= "You are not allowed to update the task")
+
+
+
 
     body = body.model_dump()
     for field, value in body.items():
@@ -49,19 +49,20 @@ def update_task(body:TaskSchema, task_id:int, db:session):
     db.refresh(one_task)
 
 
-    return{
-        "status":"task updated successfully", "data":one_task
-    }
+    return one_task
 
 
-def delete_task(task_id:int,db:session):
-    one_task = db.query(TaskModel).get(task_id)
+def delete_task(task_id:int,db:session, user:UserModel):
+    one_task:TaskModel = db.query(TaskModel).get(task_id)
     if not one_task:
         raise HTTPException(404, detail= "task id is incorrect")
+
+    if one_task.user_id != user.id:
+        raise HTTPException(404, detail= "You are not allowed to delete the task")
+
+
 
     db.delete(one_task)
     db.commit()
 
-    return {
-        "status":"task deleted successfully", "data deleted":{one_task}
-    }
+    return None

@@ -1,0 +1,16 @@
+$kind: http-request
+name: New Request
+url: 127.0.0.1:8000/update_product/3
+method: PUT
+body:
+  type: json
+  content: " {\r
+
+    \        \"id\":3,\r
+
+    \        \"name\": \"Laptop MOuse\",\r
+
+    \        \"price\": 200\r
+
+    \    }"
+order: 2000

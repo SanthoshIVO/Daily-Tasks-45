@@ -1,0 +1,4 @@
+$kind: http-request
+url: 127.0.0.1:8000/tasks/all_tasks
+method: GET
+order: 2000
