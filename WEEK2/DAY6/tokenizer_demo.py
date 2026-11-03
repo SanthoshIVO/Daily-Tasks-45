@@ -5,6 +5,8 @@ Install:  pip install tiktoken
 Run:      python tokenizer_demo.py
 """
 
+import sys
+
 import tiktoken
 
 SENTENCES = [
@@ -36,6 +38,8 @@ def show_tokens(text: str, encoding_name: str) -> None:
 
 
 def main() -> None:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     for text in SENTENCES:
         print("=" * 70)
         print("TEXT:", text)

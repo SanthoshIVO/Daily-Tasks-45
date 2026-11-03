@@ -5,7 +5,7 @@ Today's task checklist:
 - [ ] Read sections 1 to 4 (concepts)
 - [ ] Submit the one-page comparison note (Section 1)
 - [ ] Run `tokenizer_demo.py` and screenshot a web tokenizer (Section 6)
-- [ ] Run `llm_call_gemini.py` (or the Claude version) and save the output (Section 7)
+- [ ] Run `llm.py` with Groq and save the response and token usage (Section 7)
 
 ---
 
@@ -194,63 +194,38 @@ python tokenizer_demo.py
 
 ## 7. Call an LLM API (Task)
 
-Pick **one**. Gemini has a free tier through Google AI Studio, so it is the easiest to start with.
+This example uses Groq's chat-completions API.
 
-### Option A: Gemini (`llm_call_gemini.py`)
-1. Get a key: https://aistudio.google.com/apikey
-2. Install and set the key (Windows PowerShell):
-```powershell
-pip install google-genai python-dotenv
-$env:GEMINI_API_KEY = "your-key-here"
-python llm_call_gemini.py
-```
-Or put `GEMINI_API_KEY=your-key-here` in a `.env` file (see Section 8).
+1. Create an API key at [console.groq.com/keys](https://console.groq.com/keys).
+2. In PowerShell, set the key for the current terminal:
 
-### Option B: Claude (`llm_call_claude.py`)
-1. Get a key from https://console.anthropic.com
-2. Install and run:
 ```powershell
-pip install anthropic python-dotenv
-$env:ANTHROPIC_API_KEY = "your-key-here"
-python llm_call_claude.py
+$env:GROQ_API_KEY = "your-key-here"
+.\DAY6.venv\Scripts\python.exe .\llm.py
 ```
 
-Both scripts print the **response text** and the **token usage** (input tokens, output tokens, total).
-
-> Model names change over time. If you get a "model not found" error, check the current model list in the provider's docs and change the `MODEL` variable at the top of the script.
+Alternatively, add `GROQ_API_KEY=your-key-here` to a `.env` file in this
+directory, then run the script. It prints the response, model name, input
+tokens, output tokens, and total tokens reported by Groq.
 
 ### Understanding the token usage output
 | Field | Meaning |
 |---|---|
-| Input / prompt tokens | Tokens in what you sent (billed) |
-| Output / completion tokens | Tokens in the answer (usually billed higher) |
+| Input / prompt tokens | Tokens in what you sent |
+| Output / completion tokens | Tokens in the answer |
 | Total | Input + output |
 
-Try this experiment and note the results:
-1. Run once with `max_tokens = 50`: answer is cut short.
-2. Run with a longer prompt: input tokens go up.
-3. Run with temperature `0` twice vs `1.0` twice: compare how much the answers vary.
+Try changing `PROMPT` in `llm.py` and compare the input and output token counts.
 
 ---
 
-## 8. Keep Your API Key Safe
+## 8. Credentials and privacy
 
-Never put the key inside the script or push it to GitHub.
+Keep your Groq API key out of the source code and never commit `.env` to
+GitHub. The API has usage limits; check your Groq console for current limits.
 
-1. Create a `.env` file:
-```
-GEMINI_API_KEY=your-key-here
-ANTHROPIC_API_KEY=your-key-here
-```
-2. Create `.gitignore` with:
-```
-.env
-__pycache__/
-venv/
-```
-3. Create `.env.example` (safe to commit) with fake values.
-
-If a key ever gets pushed, **revoke it immediately** in the provider's console.
+If a cloud API key is ever pushed, revoke it immediately in the provider's
+console.
 
 ---
 
