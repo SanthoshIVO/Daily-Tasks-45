@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prompt Engineering Notes for Freshers</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root {
+    --bg: #070b14;
+    --bg2: #0d1525;
+    --bg3: #111c30;
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --neon-cyan: #00f5ff;
+    --neon-purple: #b44fff;
+    --neon-green: #00ff88;
+    --neon-orange: #ff6b35;
+    --neon-pink: #ff2d78;
+    --text: #e8edf5;
+    --text-muted: #6b7a99;
+    --text-dim: #3a4560;
+    --card-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-body: 'DM Sans', sans-serif;
+    --nav-w: 260px;
+    --accent1: #00f5ff;
+    --accent2: #b44fff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── CANVAS PARTICLES ── */
+  #particles-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+  }
+
+  /* ── NAV SIDEBAR ── */
+  #sidebar {
+    position: fixed; top: 0; left: 0;
+    width: var(--nav-w);
+    height: 100vh;
+    background: rgba(7,11,20,0.92);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--glass-border);
+    z-index: 100;
+    display: flex; flex-direction: column;
+    padding: 28px 0 20px;
+    overflow-y: auto;
+    transition: transform .3s ease;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 2px; }
+
+  .nav-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 16px;
+  }
+  .nav-logo span {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: .5px;
+    line-height: 1.3;
+    display: block;
+  }
+  .nav-logo small {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .nav-section-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 24px 4px;
+  }
+
+  .nav-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: var(--font-body);
+    font-weight: 400;
+    border-left: 2px solid transparent;
+    transition: all .2s;
+    cursor: pointer;
+  }
+  .nav-link i { font-size: 12px; width: 16px; text-align: center; opacity: .7; }
+  .nav-link:hover { color: var(--text); background: var(--glass); }
+  .nav-link.active {
+    color: var(--neon-cyan);
+    border-left-color: var(--neon-cyan);
+    background: rgba(0,245,255,0.06);
+    font-weight: 500;
+  }
+  .nav-link.active i { opacity: 1; }
+
+  /* ── HAMBURGER ── */
+  #hamburger {
+    display: none;
+    position: fixed; top: 16px; left: 16px;
+    z-index: 200;
+    background: var(--bg2);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    cursor: pointer; font-size: 16px;
+    align-items: center; justify-content: center;
+  }
+  #overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 99;
+  }
+
+  /* ── MAIN CONTENT ── */
+  #main {
+    margin-left: var(--nav-w);
+    position: relative; z-index: 1;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 80px 60px;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,245,255,.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(180,79,255,.07) 0%, transparent 60%),
+                var(--bg);
+  }
+
+  .hero-shapes {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .shape {
+    position: absolute; border-radius: 50%;
+    filter: blur(70px); opacity: .12;
+    animation: float 8s ease-in-out infinite;
+  }
+  .shape-1 { width: 400px; height: 400px; background: var(--neon-cyan); top: -100px; right: 5%; animation-delay: 0s; }
+  .shape-2 { width: 300px; height: 300px; background: var(--neon-purple); bottom: 10%; left: 10%; animation-delay: -3s; }
+  .shape-3 { width: 200px; height: 200px; background: var(--neon-green); top: 40%; left: 40%; animation-delay: -5s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 800px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,245,255,.08);
+    border: 1px solid rgba(0,245,255,.2);
+    padding: 6px 16px; border-radius: 100px;
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--neon-cyan); margin-bottom: 28px;
+    animation: fadeDown .8s ease both;
+  }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--neon-cyan); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:none} }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px,5vw,72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    animation: fadeUp .9s .1s ease both;
+  }
+  .hero-title .line1 { display: block; color: var(--text); }
+  .hero-title .grad {
+    background: linear-gradient(100deg, var(--neon-cyan) 0%, var(--neon-purple) 50%, var(--neon-pink) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    margin-top: 20px; font-size: 17px; color: var(--text-muted);
+    max-width: 540px; line-height: 1.7; font-weight: 300;
+    animation: fadeUp .9s .2s ease both;
+  }
+  .hero-cta {
+    margin-top: 40px; display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp .9s .3s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    color: var(--bg); font-family: var(--font-display); font-weight: 700;
+    font-size: 14px; padding: 13px 28px; border-radius: 10px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: all .3s; box-shadow: 0 0 30px rgba(0,245,255,.2);
+    letter-spacing: .3px;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,245,255,.35); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--text-muted);
+    font-family: var(--font-body); font-size: 14px; padding: 13px 28px;
+    border: 1px solid var(--glass-border); border-radius: 10px;
+    text-decoration: none; cursor: pointer; transition: all .3s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.2); background: var(--glass); }
+
+  .hero-stats {
+    margin-top: 60px; display: flex; gap: 40px; flex-wrap: wrap;
+    animation: fadeUp .9s .4s ease both;
+  }
+  .stat { text-align: left; }
+  .stat-num { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--neon-cyan); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 80px 60px; position: relative; }
+  section:nth-child(even) { background: rgba(13,21,37,.5); }
+
+  .section-header { margin-bottom: 48px; }
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--neon-cyan); margin-bottom: 12px; opacity: .8;
+  }
+  .section-tag::before { content:''; width:20px; height:1px; background:currentColor; }
+  .section-title {
+    font-family: var(--font-display); font-size: clamp(26px,3.5vw,44px);
+    font-weight: 800; line-height: 1.1; letter-spacing: -.5px;
+  }
+  .section-sub { margin-top: 12px; color: var(--text-muted); font-size: 15px; max-width: 600px; line-height: 1.7; }
+
+  /* ── GLASS CARD ── */
+  .glass-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+    transition: all .3s;
+    position: relative; overflow: hidden;
+  }
+  .glass-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .glass-card:hover {
+    border-color: rgba(0,245,255,.2);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,.3), 0 0 30px rgba(0,245,255,.06);
+  }
+
+  /* ── SECTION 1: WHAT IS PE ── */
+  .what-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .info-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px; padding: 24px;
+    transition: all .3s;
+  }
+  .info-card:hover { border-color: rgba(0,245,255,.18); transform: translateY(-3px); }
+  .info-card-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 16px;
+  }
+  .ic-cyan { background: rgba(0,245,255,.1); color: var(--neon-cyan); }
+  .ic-purple { background: rgba(180,79,255,.1); color: var(--neon-purple); }
+  .ic-green { background: rgba(0,255,136,.1); color: var(--neon-green); }
+  .ic-orange { background: rgba(255,107,53,.1); color: var(--neon-orange); }
+  .info-card h3 { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .info-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+  .example-prompt {
+    background: #0a1020;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px; overflow: hidden;
+    margin-top: 32px;
+  }
+  .prompt-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255,255,255,.03);
+    border-bottom: 1px solid var(--glass-border);
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+  }
+  .prompt-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .prompt-body { padding: 20px; }
+  .prompt-label {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 8px; opacity: .5;
+  }
+  .prompt-text {
+    font-family: var(--font-mono); font-size: 13.5px;
+    color: var(--neon-cyan); line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .prompt-divider { height: 1px; background: var(--glass-border); margin: 16px 0; }
+  .output-text { font-family: var(--font-mono); font-size: 13px; color: var(--neon-green); line-height: 1.6; }
+
+  /* ── SECTION 2: TYPES ── */
+  .types-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+    gap: 28px;
+  }
+  .type-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all .3s;
+    position: relative;
+  }
+  .type-card:hover { transform: translateY(-5px); box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+  .type-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent-grad);
+  }
+  .type-card-head {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .type-num {
+    font-family: var(--font-mono); font-size: 11px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    color: var(--text-muted); padding: 3px 9px; border-radius: 6px;
+    flex-shrink: 0; margin-top: 3px;
+  }
+  .type-title {
+    font-family: var(--font-display); font-size: 20px;
+    font-weight: 800; line-height: 1;
+  }
+  .type-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .type-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+
+  .type-section-label {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 6px;
+  }
+  .type-text { font-size: 14px; color: var(--text-muted); line-height: 1.75; }
+
+  .code-block {
+    background: #050c1a;
+    border: 1px solid rgba(0,245,255,.12);
+    border-radius: 10px; overflow: hidden;
+  }
+  .code-block-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px;
+    background: rgba(0,245,255,.04);
+    border-bottom: 1px solid rgba(0,245,255,.08);
+  }
+  .code-lang { font-family: var(--font-mono); font-size: 10px; color: var(--neon-cyan); letter-spacing: 1px; }
+  .copy-btn {
+    background: none; border: 1px solid var(--glass-border);
+    color: var(--text-muted); font-size: 11px; font-family: var(--font-mono);
+    padding: 3px 10px; border-radius: 5px; cursor: pointer;
+    transition: all .2s; display: flex; align-items: center; gap: 5px;
+  }
+  .copy-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+  .code-content {
+    padding: 16px; font-family: var(--font-mono);
+    font-size: 13px; line-height: 1.7; color: #a8d8ff;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .code-content .kw { color: var(--neon-purple); }
+  .code-content .str { color: var(--neon-cyan); }
+  .code-content .cm { color: var(--text-dim); }
+
+  .use-cases {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .use-case-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13.5px; color: var(--text-muted); line-height: 1.5;
+  }
+  .use-case-item::before {
+    content: '▸'; color: var(--neon-cyan); flex-shrink: 0; font-size: 11px; margin-top: 2px;
+  }
+
+  /* type card color accents */
+  .tc-1 { --accent-grad: linear-gradient(90deg,#00f5ff,#00bfff); }
+  .tc-2 { --accent-grad: linear-gradient(90deg,#b44fff,#7c3aed); }
+  .tc-3 { --accent-grad: linear-gradient(90deg,#00ff88,#00cc6a); }
+  .tc-4 { --accent-grad: linear-gradient(90deg,#ff6b35,#f59e0b); }
+  .tc-5 { --accent-grad: linear-gradient(90deg,#ff2d78,#f43f5e); }
+  .tc-6 { --accent-grad: linear-gradient(90deg,#00f5ff,#b44fff); }
+  .tc-7 { --accent-grad: linear-gradient(90deg,#a3e635,#4ade80); }
+  .tc-8 { --accent-grad: linear-gradient(90deg,#fb923c,#f97316); }
+
+  /* ── SECTION 3: BEST PRACTICES ── */
+  .bp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 20px; }
+  .bp-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 14px; padding: 22px;
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: all .3s;
+  }
+  .bp-card:hover { border-color: rgba(0,255,136,.2); transform: translateY(-3px); box-shadow: 0 0 20px rgba(0,255,136,.05); }
+  .bp-icon {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    background: rgba(0,255,136,.08); color: var(--neon-green);
+  }
+  .bp-card h3 { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+  .bp-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .bp-check { color: var(--neon-green); font-size: 12px; margin-top: 10px; display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); }
+
+  /* ── SECTION 4: MISTAKES ── */
+  .mistake-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; }
+  .mistake-card {
+    background: rgba(255,45,120,.04); border: 1px solid rgba(255,45,120,.12);
+    border-radius: 14px; padding: 22px;
+    transition: all .3s; position: relative; overflow: hidden;
+  }
+  .mistake-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--neon-pink), transparent);
+  }
+  .mistake-card:hover { border-color: rgba(255,45,120,.3); transform: translateY(-3px); box-shadow: 0 0 25px rgba(255,45,120,.08); }
+  .mistake-icon { font-size: 22px; margin-bottom: 12px; }
+  .mistake-card h3 { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: #ff7bad; margin-bottom: 6px; }
+  .mistake-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .mistake-example {
+    margin-top: 12px; background: rgba(0,0,0,.3);
+    border: 1px solid rgba(255,45,120,.08);
+    border-radius: 8px; padding: 10px 12px;
+    font-family: var(--font-mono); font-size: 12px; color: #ff9ab7; line-height: 1.5;
+  }
+  .mistake-example-label { font-size: 10px; color: var(--neon-pink); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+
+  /* ── SECTION 5: WORKFLOW ── */
+  .workflow-wrap {
+    display: flex; align-items: center; gap: 0; flex-wrap: nowrap;
+    overflow-x: auto; padding-bottom: 10px;
+  }
+  .workflow-wrap::-webkit-scrollbar { height: 4px; }
+  .workflow-wrap::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 2px; }
+  .wf-step {
+    flex-shrink: 0;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 16px; padding: 24px 28px;
+    min-width: 170px; text-align: center;
+    transition: all .3s; position: relative;
+    animation: wfReveal .6s ease both;
+  }
+  @keyframes wfReveal { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+  .wf-step:hover { transform: translateY(-5px); }
+  .wf-num {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .wf-icon {
+    width: 52px; height: 52px; border-radius: 14px; margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .wf-title {
+    font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  }
+  .wf-desc { font-size: 12px; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+
+  .wf-arrow {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    width: 40px; color: var(--text-dim); font-size: 18px;
+    animation: arrowPulse 2s ease-in-out infinite;
+  }
+  @keyframes arrowPulse { 0%,100%{opacity:.3;transform:translateX(0)} 50%{opacity:1;transform:translateX(4px)} }
+
+  .wf1 { --wf-col: var(--neon-cyan); }
+  .wf2 { --wf-col: var(--neon-purple); }
+  .wf3 { --wf-col: var(--neon-orange); }
+  .wf4 { --wf-col: var(--neon-green); }
+  .wf5 { --wf-col: var(--neon-pink); }
+  .wf-step { border-color: rgba(var(--wf-rgb),0.15); }
+  .wf1 .wf-icon { background: rgba(0,245,255,.1); color: var(--neon-cyan); }
+  .wf2 .wf-icon { background: rgba(180,79,255,.1); color: var(--neon-purple); }
+  .wf3 .wf-icon { background: rgba(255,107,53,.1); color: var(--neon-orange); }
+  .wf4 .wf-icon { background: rgba(0,255,136,.1); color: var(--neon-green); }
+  .wf5 .wf-icon { background: rgba(255,45,120,.1); color: var(--neon-pink); }
+  .wf1:hover { border-color: rgba(0,245,255,.3); box-shadow: 0 0 25px rgba(0,245,255,.08); }
+  .wf2:hover { border-color: rgba(180,79,255,.3); box-shadow: 0 0 25px rgba(180,79,255,.08); }
+  .wf3:hover { border-color: rgba(255,107,53,.3); box-shadow: 0 0 25px rgba(255,107,53,.08); }
+  .wf4:hover { border-color: rgba(0,255,136,.3); box-shadow: 0 0 25px rgba(0,255,136,.08); }
+  .wf5:hover { border-color: rgba(255,45,120,.3); box-shadow: 0 0 25px rgba(255,45,120,.08); }
+
+  /* ── SECTION 6: GOLDEN TEMPLATE ── */
+  .golden-wrap {
+    max-width: 800px; margin: 0 auto;
+    background: linear-gradient(135deg, rgba(0,245,255,.04), rgba(180,79,255,.04));
+    border: 1px solid rgba(0,245,255,.15);
+    border-radius: 20px; overflow: hidden;
+  }
+  .golden-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px; background: rgba(0,245,255,.05);
+    border-bottom: 1px solid rgba(0,245,255,.1);
+  }
+  .golden-title { font-family: var(--font-mono); font-size: 13px; color: var(--neon-cyan); display: flex; align-items: center; gap: 8px; }
+  .golden-body { padding: 28px 32px; }
+  .template-row {
+    display: grid; grid-template-columns: 160px 1fr;
+    gap: 12px; align-items: start; margin-bottom: 16px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--glass-border);
+  }
+  .template-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .template-key {
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--neon-cyan); display: flex; align-items: center; gap: 6px;
+  }
+  .template-key::before { content: '['; opacity: .4; }
+  .template-key::after { content: ']'; opacity: .4; }
+  .template-val { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+  .template-val em { color: var(--neon-purple); font-style: normal; font-family: var(--font-mono); font-size: 12px; }
+
+  .copy-template-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    color: var(--bg); font-family: var(--font-mono); font-size: 13px;
+    font-weight: 700; padding: 10px 22px; border-radius: 8px;
+    border: none; cursor: pointer; transition: all .3s;
+    box-shadow: 0 0 20px rgba(0,245,255,.2);
+    margin-top: 24px;
+  }
+  .copy-template-btn:hover { transform: translateY(-2px); box-shadow: 0 0 35px rgba(0,245,255,.3); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 60px;
+    border-top: 1px solid var(--glass-border);
+    background: var(--bg);
+  }
+  .footer-logo {
+    font-family: var(--font-display); font-size: 22px; font-weight: 800;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .footer-tag { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+  .footer-line { color: var(--text-dim); font-size: 12px; font-family: var(--font-mono); }
+  .footer-line span { color: var(--neon-pink); }
+
+  /* ── SEPARATORS ── */
+  .sep {
+    height: 1px; width: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,245,255,.15), rgba(180,79,255,.1), transparent);
+    margin: 0;
+  }
+
+  /* ── REVEAL ANIMATIONS ── */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: .1s; }
+  .reveal-delay-2 { transition-delay: .2s; }
+  .reveal-delay-3 { transition-delay: .3s; }
+  .reveal-delay-4 { transition-delay: .4s; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: rgba(0,255,136,.1); border: 1px solid rgba(0,255,136,.3);
+    color: var(--neon-green); font-family: var(--font-mono); font-size: 13px;
+    padding: 10px 20px; border-radius: 8px; z-index: 1000;
+    opacity: 0; transform: translateY(10px); pointer-events: none;
+    transition: all .3s;
+  }
+  #toast.show { opacity: 1; transform: none; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 960px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #hamburger { display: flex; }
+    #overlay.show { display: block; }
+    .what-grid { grid-template-columns: 1fr; }
+    .types-grid { grid-template-columns: 1fr; }
+    section { padding: 60px 24px; }
+    #hero { padding: 80px 24px 60px; }
+  }
+  @media(max-width: 640px) {
+    .hero-stats { gap: 24px; }
+    .workflow-wrap { gap: 0; }
+    .template-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* Progress bar */
+  #progress { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); z-index: 999; transition: width .1s linear; }
+
+  /* ── SCENARIO TABS ── */
+  .scenario-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+  .stab {
+    padding: 8px 18px; border-radius: 100px; font-size: 13px; font-family: var(--font-mono);
+    border: 1px solid var(--glass-border); background: var(--glass); color: var(--text-muted);
+    cursor: pointer; transition: all .25s;
+  }
+  .stab:hover { border-color: rgba(0,245,255,.3); color: var(--text); }
+  .stab.active { background: rgba(0,245,255,.1); border-color: rgba(0,245,255,.4); color: var(--neon-cyan); }
+
+  .scenario-panel { display: none; }
+  .scenario-panel.active { display: block; }
+
+  .scenario-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 18px; overflow: hidden; margin-bottom: 20px;
+    transition: all .3s;
+  }
+  .scenario-card:hover { border-color: rgba(0,245,255,.18); transform: translateY(-3px); }
+  .sc-head {
+    padding: 18px 24px; display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,.02); border-bottom: 1px solid var(--glass-border);
+    cursor: pointer; user-select: none;
+  }
+  .sc-num {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    background: rgba(0,245,255,.1); color: var(--neon-cyan);
+  }
+  .sc-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; flex: 1; }
+  .sc-industry {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px;
+    padding: 3px 10px; border-radius: 100px; border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+  }
+  .sc-arrow { color: var(--text-dim); font-size: 12px; transition: transform .3s; }
+  .scenario-card.open .sc-arrow { transform: rotate(90deg); }
+
+  .sc-body {
+    display: none; padding: 22px 24px;
+  }
+  .scenario-card.open .sc-body { display: block; }
+
+  .sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .sc-box {
+    background: rgba(0,0,0,.25); border: 1px solid var(--glass-border);
+    border-radius: 10px; padding: 14px;
+  }
+  .sc-box-label {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px;
+  }
+  .sc-box-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  .sc-prompt {
+    background: #050c1a; border: 1px solid rgba(0,245,255,.12);
+    border-radius: 10px; padding: 16px; margin: 14px 0;
+    font-family: var(--font-mono); font-size: 13px; color: #a8d8ff; line-height: 1.7;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .sc-output {
+    background: rgba(0,255,136,.04); border: 1px solid rgba(0,255,136,.1);
+    border-radius: 10px; padding: 16px;
+    font-family: var(--font-mono); font-size: 13px; color: #7dffb8; line-height: 1.7;
+  }
+  .sc-tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .sc-tag {
+    font-size: 11px; font-family: var(--font-mono);
+    padding: 3px 10px; border-radius: 6px; border: 1px solid var(--glass-border);
+    color: var(--text-muted); background: var(--glass);
+  }
+  .sc-tag.type-tag { border-color: rgba(0,245,255,.2); color: var(--neon-cyan); background: rgba(0,245,255,.05); }
+
+  @media(max-width:640px) { .sc-grid { grid-template-columns: 1fr; } }
+
+  /* ── PROJECT USAGE SECTION ── */
+  .pu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 22px; }
+  .pu-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 18px; padding: 24px; transition: all .3s; position: relative; overflow: hidden;
+  }
+  .pu-card::after {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle at top right, var(--pu-col) 0%, transparent 70%);
+    opacity: .15; pointer-events: none;
+  }
+  .pu-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+
+  .pu-icon-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .pu-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    background: rgba(var(--pu-rgb),.1); color: var(--pu-col); flex-shrink: 0;
+  }
+  .pu-card h3 { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+  .pu-card .pu-domain { font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); margin-top: 2px; }
+  .pu-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; }
+  .pu-techniques { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pu-tech {
+    font-size: 11px; font-family: var(--font-mono); padding: 3px 9px;
+    border-radius: 6px; border: 1px solid rgba(0,245,255,.15);
+    color: var(--neon-cyan); background: rgba(0,245,255,.05);
+  }
+  .pu-examples { display: flex; flex-direction: column; gap: 8px; }
+  .pu-example {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 13px; color: var(--text-muted); line-height: 1.5;
+  }
+  .pu-example::before { content: '→'; color: var(--pu-col); flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+  .pu-example b { color: var(--text); font-weight: 500; }
+
+  .pu-c1 { --pu-col: #00f5ff; --pu-rgb: 0,245,255; }
+  .pu-c2 { --pu-col: #b44fff; --pu-rgb: 180,79,255; }
+  .pu-c3 { --pu-col: #00ff88; --pu-rgb: 0,255,136; }
+  .pu-c4 { --pu-col: #ff6b35; --pu-rgb: 255,107,53; }
+  .pu-c5 { --pu-col: #ff2d78; --pu-rgb: 255,45,120; }
+  .pu-c6 { --pu-col: #a3e635; --pu-rgb: 163,230,53; }
+  .pu-c7 { --pu-col: #fbbf24; --pu-rgb: 251,191,36; }
+  .pu-c8 { --pu-col: #38bdf8; --pu-rgb: 56,189,248; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<canvas id="particles-canvas"></canvas>
+<div id="toast"><i class="fas fa-check"></i> Copied to clipboard!</div>
+
+<!-- HAMBURGER -->
+<button id="hamburger" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+<div id="overlay" onclick="toggleNav()"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="nav-logo">
+    <span>Prompt Engineering</span>
+    <small>// Notes for Freshers</small>
+  </div>
+  <div class="nav-section-label">Overview</div>
+  <a class="nav-link active" href="#hero"><i class="fas fa-home"></i> Introduction</a>
+  <a class="nav-link" href="#what"><i class="fas fa-lightbulb"></i> What is PE?</a>
+
+  <div class="nav-section-label">Core Types</div>
+  <a class="nav-link" href="#types"><i class="fas fa-layer-group"></i> All 8 Types</a>
+  <a class="nav-link" href="#zero-shot"><i class="fas fa-bolt"></i> Zero-Shot</a>
+  <a class="nav-link" href="#one-shot"><i class="fas fa-crosshairs"></i> One-Shot</a>
+  <a class="nav-link" href="#few-shot"><i class="fas fa-clone"></i> Few-Shot</a>
+  <a class="nav-link" href="#cot"><i class="fas fa-brain"></i> Chain-of-Thought</a>
+  <a class="nav-link" href="#role"><i class="fas fa-user-tie"></i> Role-Based</a>
+  <a class="nav-link" href="#instruction"><i class="fas fa-list-check"></i> Instruction</a>
+  <a class="nav-link" href="#contextual"><i class="fas fa-database"></i> Contextual</a>
+  <a class="nav-link" href="#step"><i class="fas fa-stairs"></i> Step-by-Step</a>
+
+  <div class="nav-section-label">Mastery</div>
+  <a class="nav-link" href="#bestpractices"><i class="fas fa-star"></i> Best Practices</a>
+  <a class="nav-link" href="#mistakes"><i class="fas fa-triangle-exclamation"></i> Common Mistakes</a>
+  <a class="nav-link" href="#workflow"><i class="fas fa-diagram-project"></i> Workflow</a>
+  <a class="nav-link" href="#scenarios"><i class="fas fa-flask"></i> Real-World Scenarios</a>
+  <a class="nav-link" href="#projectuse"><i class="fas fa-briefcase"></i> Use in Projects</a>
+  <a class="nav-link" href="#golden"><i class="fas fa-trophy"></i> Golden Template</a>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><i class="fas fa-robot"></i> GenAI Learning Series · 2024</div>
+    <h1 class="hero-title">
+      <span class="line1">Prompt Engineering</span>
+      <span class="grad">Notes for Freshers</span>
+    </h1>
+    <p class="hero-sub">Master the art of talking to AI. Learn how to write effective prompts, understand key techniques, and unlock the true potential of large language models — starting from zero.</p>
+    <div class="hero-cta">
+      <a class="btn-primary" href="#what"><i class="fas fa-play"></i> Start Learning</a>
+      <a class="btn-ghost" href="#golden"><i class="fas fa-trophy"></i> Golden Template</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">Prompting Techniques</div></div>
+      <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Real Examples</div></div>
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Best Practices</div></div>
+    </div>
+  </div>
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 1: WHAT IS PE ══ -->
+<section id="what">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fas fa-lightbulb"></i> Foundations</div>
+    <h2 class="section-title">What is Prompt Engineering?</h2>
+    <p class="section-sub">Prompt Engineering is the practice of designing and optimizing text inputs to AI models to get the best possible outputs — it's the interface between human intent and machine intelligence.</p>
+  </div>
+
+  <div class="what-grid">
+    <div class="info-card reveal reveal-delay-1">
+      <div class="info-card-icon ic-cyan"><i class="fas fa-circle-info"></i></div>
+      <h3>Definition</h3>
+      <p>Prompt Engineering is the process of crafting, structuring, and refining instructions (called "prompts") given to AI language models to control their behavior and guide the quality of their responses. Think of it as knowing exactly how to ask the right question to get the perfect answer.</p>
+    </div>
+    <div class="info-card reveal reveal-delay-2">
+      <div class="info-card-icon ic-purple"><i class="fas fa-chart-line"></i></div>
+      <h3>Why It's Important in GenAI</h3>
+      <p>Without well-crafted prompts, AI models may produce vague, off-topic, or inaccurate responses. Prompt Engineering dramatically improves accuracy, relevance, and usefulness of AI outputs — making it a core skill for anyone working with LLMs like ChatGPT, Claude, or Gemini.</p>
+    </div>
+    <div class="info-card reveal reveal-delay-3">
+      <div class="info-card-icon ic-green"><i class="fas fa-map-location-dot"></i></div>
+      <h3>Where It Is Used</h3>
+      <p>Chatbots &amp; virtual assistants · Content generation pipelines · Code generation tools · Customer support automation · Medical diagnosis aids · Legal document analysis · Educational tools · Search engines · Data extraction and summarization systems.</p>
+    </div>
+    <div class="info-card reveal reveal-delay-4">
+      <div class="info-card-icon ic-orange"><i class="fas fa-globe"></i></div>
+      <h3>Real-World Applications</h3>
+      <p>GitHub Copilot uses prompts to generate code. Google's AI search summarizes using prompt chains. ChatGPT agents for customer support use role prompts. Medical AI uses contextual prompts to assist diagnoses. Marketing tools generate ad copy from brief structured prompts.</p>
+    </div>
+  </div>
+
+  <div class="example-prompt reveal" style="margin-top:40px">
+    <div class="prompt-header">
+      <div class="prompt-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <span>Beginner Example</span>
+      <span>prompt.txt</span>
+    </div>
+    <div class="prompt-body">
+      <div class="prompt-label">📝 User Prompt</div>
+      <div class="prompt-text">"Summarize this article in 5 bullet points:
+[Article text here...]"</div>
+      <div class="prompt-divider"></div>
+      <div class="prompt-label">🤖 Expected AI Output</div>
+      <div class="output-text">• The article discusses the rise of electric vehicles globally.
+• Sales of EVs grew by 35% in 2023 compared to the previous year.
+• Major manufacturers like Tesla, BYD, and GM are leading the shift.
+• Charging infrastructure expansion remains a key challenge.
+• Governments worldwide are offering subsidies to accelerate adoption.</div>
+    </div>
+  </div>
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 2: TYPES ══ -->
+<section id="types" style="background:var(--bg);">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fas fa-layer-group"></i> Core Techniques</div>
+    <h2 class="section-title">8 Types of Prompt Engineering</h2>
+    <p class="section-sub">Each prompting technique serves a unique purpose. Understanding when and how to use each one is the foundation of becoming an effective prompt engineer.</p>
+  </div>
+
+  <div class="types-grid">
+
+    <!-- 1. ZERO-SHOT -->
+    <div class="type-card tc-1 reveal" id="zero-shot">
+      <div class="type-card-head">
+        <span class="type-num">01</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#00f5ff,#00bfff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Zero-Shot Prompting</div>
+          <div class="type-subtitle">No examples needed — just ask directly</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">You ask the AI to perform a task without giving it any prior examples. You rely on the model's pre-trained knowledge to understand and respond correctly. It's like asking an expert a question and trusting they already know the subject.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">Zero-shot prompting is the simplest and fastest approach. When tasks are straightforward or the model is already well-trained on them, you don't need to waste time writing examples — just state the task clearly.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You want to translate a greeting into French without teaching the AI what French looks like. The model already knows French from training, so no examples are needed.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">Translate this sentence into French:
+"Hello, how are you?"</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(0,255,136,.12)">
+            <div class="code-block-top" style="background:rgba(0,255,136,.04);border-color:rgba(0,255,136,.08)"><span class="code-lang" style="color:var(--neon-green)">AI RESPONSE</span></div>
+            <div class="code-content" style="color:#7dffb8">"Bonjour, comment allez-vous ?"</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Simple translation or language conversion tasks</div>
+            <div class="use-case-item">Quick factual questions and knowledge retrieval</div>
+            <div class="use-case-item">Basic classification (positive/negative sentiment)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. ONE-SHOT -->
+    <div class="type-card tc-2 reveal" id="one-shot">
+      <div class="type-card-head">
+        <span class="type-num">02</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#b44fff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent">One-Shot Prompting</div>
+          <div class="type-subtitle">Teach the AI with a single example</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">You provide exactly one example to show the AI the pattern or format you expect, then ask it to perform the same kind of task with new input. It's like showing someone how to do something once and asking them to replicate it.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">When zero-shot doesn't give a consistent output format, one example often does the trick. It anchors the model to a specific style, tone, or structure you need without overwhelming it with multiple demonstrations.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You want the AI to write product descriptions in a specific format. You show one example of your desired output, then ask it to write descriptions for new products in the same style.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">Product: Wireless Headphones
+Description: "Experience crystal-clear audio with 30-hour battery life.
+Perfect for music lovers and remote workers alike."
+
+Now write a similar description for:
+Product: Smart Watch</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(180,79,255,.2)">
+            <div class="code-block-top" style="background:rgba(180,79,255,.05);border-color:rgba(180,79,255,.1)"><span class="code-lang" style="color:var(--neon-purple)">AI RESPONSE</span></div>
+            <div class="code-content" style="color:#d4a8ff">"Stay connected and track your health goals with our sleek Smart Watch. Featuring real-time notifications and a 7-day battery, it's your everyday performance partner."</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Product description generation in consistent format</div>
+            <div class="use-case-item">Email or message templates with a fixed structure</div>
+            <div class="use-case-item">Data transformation with a clear before/after pattern</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. FEW-SHOT -->
+    <div class="type-card tc-3 reveal" id="few-shot">
+      <div class="type-card-head">
+        <span class="type-num">03</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#00ff88,#00cc6a);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Few-Shot Prompting</div>
+          <div class="type-subtitle">Multiple examples for higher accuracy</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">You provide 2–5 examples of input-output pairs before asking the actual question. The AI learns the pattern from these examples and applies it to the new input. This technique dramatically improves consistency in format and quality.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">Few-shot prompting works well for custom classification, formatting tasks, and niche tasks where the model may not have seen many examples in training. The more examples you provide, the better the model aligns with your expectations.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You want the AI to classify customer feedback as Positive, Negative, or Neutral. You give 3 examples first, then ask it to classify new feedback in the same way.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">Classify each review as Positive, Negative, or Neutral:
+
+Review: "The product works great, very happy!"
+Label: Positive
+
+Review: "Delivery was late and packaging was damaged."
+Label: Negative
+
+Review: "It arrived on time. Nothing special."
+Label: Neutral
+
+Now classify:
+Review: "Battery life is excellent but the screen is dim."</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(0,255,136,.2)">
+            <div class="code-block-top" style="background:rgba(0,255,136,.05);border-color:rgba(0,255,136,.1)"><span class="code-lang" style="color:var(--neon-green)">AI RESPONSE</span></div>
+            <div class="code-content" style="color:#7dffb8">Label: Neutral
+
+(The review contains both a positive aspect — battery life — and a negative aspect — screen quality — making it a balanced/neutral sentiment overall.)</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Sentiment analysis and text classification</div>
+            <div class="use-case-item">Custom question-answering formats</div>
+            <div class="use-case-item">Named entity extraction with specific schema</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. CHAIN-OF-THOUGHT -->
+    <div class="type-card tc-4 reveal" id="cot">
+      <div class="type-card-head">
+        <span class="type-num">04</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#ff6b35,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Chain-of-Thought Prompting</div>
+          <div class="type-subtitle">Guide AI to think step-by-step</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">Chain-of-Thought (CoT) prompting encourages the AI to reason through a problem step-by-step before giving a final answer. Instead of jumping to a conclusion, the model explains its thinking process — much like how a math student shows their work.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">AI models make fewer errors on complex problems when they reason through intermediate steps. CoT is especially powerful for math, logic, multi-step planning, and any task where the reasoning process matters as much as the answer.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You ask an AI to solve a word problem. Instead of just asking for the answer, you include "Let's think step by step" — this triggers the model to show its intermediate reasoning before arriving at the final answer.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">A store sells apples at ₹5 each and oranges at ₹8 each.
+Riya buys 4 apples and 3 oranges. How much does she pay in total?
+
+Let's think step by step.</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(255,107,53,.2)">
+            <div class="code-block-top" style="background:rgba(255,107,53,.05);border-color:rgba(255,107,53,.1)"><span class="code-lang" style="color:var(--neon-orange)">AI RESPONSE (with reasoning)</span></div>
+            <div class="code-content" style="color:#ffc09b">Step 1: Cost of apples = 4 × ₹5 = ₹20
+Step 2: Cost of oranges = 3 × ₹8 = ₹24
+Step 3: Total cost = ₹20 + ₹24 = ₹44
+
+Riya pays ₹44 in total.</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Math word problems and quantitative reasoning</div>
+            <div class="use-case-item">Complex logical deductions and planning tasks</div>
+            <div class="use-case-item">Debugging code by reasoning through program flow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. ROLE-BASED -->
+    <div class="type-card tc-5 reveal" id="role">
+      <div class="type-card-head">
+        <span class="type-num">05</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#ff2d78,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Role-Based Prompting</div>
+          <div class="type-subtitle">Assign a persona to shape the response</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">You assign the AI a specific role, job title, or persona before asking your question. The model then responds in the style, tone, and depth expected of that role — like an expert in that field. This is also called "persona prompting."</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">Different roles produce different kinds of responses. A "senior software engineer" gives deeper technical answers than a "general assistant." Role-based prompting aligns the AI's depth, vocabulary, and tone to your specific professional need.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You're preparing for a job interview. Instead of generic advice, you ask the AI to act as a senior HR interviewer who would actually conduct the interview — making the preparation much more realistic and useful.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">Act as a senior HR interviewer at a top tech company.
+I am a fresher applying for a Software Engineer role.
+Ask me 5 behavioral interview questions that test
+problem-solving, teamwork, and communication skills.
+After I answer each, give me feedback on my response.</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(255,45,120,.2)">
+            <div class="code-block-top" style="background:rgba(255,45,120,.05);border-color:rgba(255,45,120,.1)"><span class="code-lang" style="color:var(--neon-pink)">AI RESPONSE</span></div>
+            <div class="code-content" style="color:#ffb3cc">Q1: "Tell me about a time you had to learn a new technology quickly under pressure. What was your approach and what did you learn from the experience?"
+
+[Waiting for your answer to provide personalized feedback...]</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Interview preparation with a realistic interviewer persona</div>
+            <div class="use-case-item">Getting domain-specific technical explanations</div>
+            <div class="use-case-item">Writing in a specific professional tone (lawyer, doctor, teacher)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. INSTRUCTION PROMPTING -->
+    <div class="type-card tc-6 reveal" id="instruction">
+      <div class="type-card-head">
+        <span class="type-num">06</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#00f5ff,#b44fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Instruction Prompting</div>
+          <div class="type-subtitle">Give explicit commands for precise control</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">Instruction prompting involves writing clear, explicit, step-by-step directives for the AI. Instead of asking a vague question, you give the AI a structured set of instructions on exactly what to do, how to do it, and in what format to respond.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">When you need highly specific, structured outputs — like reports, formatted tables, or structured JSON — vague prompts fail. Instruction prompting gives you tight control over the AI's behavior and output structure, reducing the need to re-prompt.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You want the AI to write a blog post, but in a very specific structure. You give it detailed instructions about word count, tone, sections to include, and even the opening sentence style.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">Write a short blog post with these requirements:
+1. Topic: "Benefits of drinking water daily"
+2. Length: 200–250 words
+3. Tone: Friendly and conversational
+4. Structure: Introduction, 3 key benefits, Conclusion
+5. Start with a surprising fact about water
+6. End with a call-to-action for the reader</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(0,245,255,.15)">
+            <div class="code-block-top" style="background:rgba(0,245,255,.04);border-color:rgba(0,245,255,.08)"><span class="code-lang" style="color:var(--neon-cyan)">AI RESPONSE</span></div>
+            <div class="code-content" style="color:#a8d8ff">Did you know your brain is 75% water? That's just one reason staying hydrated matters more than you think. Let's explore how a simple daily habit can transform your health...
+
+[Introduction] [Benefit 1: Energy] [Benefit 2: Skin] [Benefit 3: Focus] [Conclusion + CTA]</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Content creation with strict formatting requirements</div>
+            <div class="use-case-item">Generating structured data (JSON, CSV, tables)</div>
+            <div class="use-case-item">Technical documentation with specific section formats</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. CONTEXTUAL PROMPTING -->
+    <div class="type-card tc-7 reveal" id="contextual">
+      <div class="type-card-head">
+        <span class="type-num">07</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#a3e635,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Contextual Prompting</div>
+          <div class="type-subtitle">Provide background to sharpen relevance</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">Contextual prompting means providing relevant background information, data, or situational details alongside your question. The AI uses this context to generate highly tailored, accurate, and relevant responses instead of generic ones.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">AI models have no knowledge of your specific situation, company, or problem. By embedding context in your prompt, you narrow the model's focus and ensure its answer applies directly to your real circumstances — not a hypothetical one.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You're a startup and need marketing advice. Instead of asking "How should I market my product?", you provide your product description, target audience, budget, and competitors — the AI then gives advice that fits your exact situation.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">Context:
+- I run a small online bakery in Bangalore
+- My customers are mostly working professionals aged 25-40
+- My budget is ₹10,000/month for marketing
+- My main competitor is a local bakery with 5k Instagram followers
+
+Task:
+Suggest 5 specific marketing strategies to increase my
+online orders by 30% in the next 3 months.</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(163,230,53,.2)">
+            <div class="code-block-top" style="background:rgba(163,230,53,.05);border-color:rgba(163,230,53,.1)"><span class="code-lang" style="color:#a3e635">AI RESPONSE</span></div>
+            <div class="code-content" style="color:#c9f08d">1. Instagram Reels (budget: ₹2000) — Post 3 short baking
+   videos per week showing behind-the-scenes process.
+2. Corporate gifting campaign — Target IT companies near
+   Whitefield for monthly office celebrations...
+[3 more tailored strategies follow]</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Business strategy and decision-making tasks</div>
+            <div class="use-case-item">Personalized learning plans or recommendations</div>
+            <div class="use-case-item">Document analysis when content is pasted into prompt</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. STEP-BY-STEP -->
+    <div class="type-card tc-8 reveal" id="step">
+      <div class="type-card-head">
+        <span class="type-num">08</span>
+        <div>
+          <div class="type-title" style="background:linear-gradient(90deg,#fb923c,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Step-by-Step Prompting</div>
+          <div class="type-subtitle">Break complex tasks into sequential steps</div>
+        </div>
+      </div>
+      <div class="type-body">
+        <div>
+          <div class="type-section-label">Definition</div>
+          <div class="type-text">Step-by-step prompting asks the AI to decompose a complex task into smaller, ordered sub-tasks and address each one in sequence. Unlike Chain-of-Thought (which is about internal reasoning), step-by-step is about structuring the output itself as a sequential guide or checklist.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Why We Use It</div>
+          <div class="type-text">When a task is complex and multi-phase, asking for everything at once often results in an incomplete or disorganized response. Breaking it into steps forces the model to be thorough, organized, and ensures nothing is missed.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Real-Time Example</div>
+          <div class="type-text">You want to build a REST API. Instead of asking "How do I build a REST API?", you ask the AI to walk you through the process step-by-step, from environment setup to deployment — giving you an actionable, learnable guide.</div>
+        </div>
+        <div>
+          <div class="type-section-label">Sample Prompt</div>
+          <div class="code-block">
+            <div class="code-block-top"><span class="code-lang">PROMPT</span><button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button></div>
+            <div class="code-content">I want to build my first REST API using Python and Flask.
+I'm a complete beginner with no prior backend experience.
+
+Please explain the process step by step, starting from:
+1. Setting up the environment
+2. Creating the project structure
+3. Writing the first API endpoint
+4. Testing the API
+5. Deploying it online
+
+Use simple language and include code examples.</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Example Output</div>
+          <div class="code-block" style="border-color:rgba(251,146,60,.2)">
+            <div class="code-block-top" style="background:rgba(251,146,60,.05);border-color:rgba(251,146,60,.1)"><span class="code-lang" style="color:#fb923c)">AI RESPONSE</span></div>
+            <div class="code-content" style="color:#fcd3a8">Step 1: Setting Up Your Environment
+Install Python 3 from python.org. Then open your
+terminal and run: pip install flask
+
+Step 2: Create Project Structure
+Create a folder called my-api/ with:
+  app.py — your main application file
+  requirements.txt — your dependencies
+[Steps 3, 4, 5 follow with code examples...]</div>
+          </div>
+        </div>
+        <div>
+          <div class="type-section-label">Best Use Cases</div>
+          <div class="use-cases">
+            <div class="use-case-item">Technical tutorials and how-to guides for beginners</div>
+            <div class="use-case-item">Project planning and workflow breakdowns</div>
+            <div class="use-case-item">Onboarding documentation and SOPs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /types-grid -->
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 3: BEST PRACTICES ══ -->
+<section id="bestpractices">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fas fa-star"></i> Level Up</div>
+    <h2 class="section-title">Prompt Engineering Best Practices</h2>
+    <p class="section-sub">Apply these principles to instantly improve the quality of every prompt you write. These are the habits that separate a good prompt engineer from a great one.</p>
+  </div>
+
+  <div class="bp-grid">
+    <div class="bp-card reveal">
+      <div class="bp-icon"><i class="fas fa-bullseye"></i></div>
+      <div>
+        <h3>Be Specific</h3>
+        <p>Vague prompts produce vague answers. State exactly what you want — the topic, format, length, tone, and audience. The more precise you are, the more targeted and useful the response will be.</p>
+        <div class="bp-check"><i class="fas fa-circle-check"></i> Specificity = better output quality</div>
+      </div>
+    </div>
+    <div class="bp-card reveal reveal-delay-1">
+      <div class="bp-icon"><i class="fas fa-book-open"></i></div>
+      <div>
+        <h3>Give Context</h3>
+        <p>Always tell the AI who you are, what you're trying to accomplish, and what constraints apply. Context eliminates ambiguity and ensures the model's answer is relevant to your real situation.</p>
+        <div class="bp-check"><i class="fas fa-circle-check"></i> Context narrows the solution space</div>
+      </div>
+    </div>
+    <div class="bp-card reveal reveal-delay-2">
+      <div class="bp-icon"><i class="fas fa-table-list"></i></div>
+      <div>
+        <h3>Define Output Format</h3>
+        <p>Tell the AI exactly how you want the output structured — as a list, table, JSON, paragraph, numbered steps, or markdown. This avoids reformatting work and makes the response immediately usable.</p>
+        <div class="bp-check"><i class="fas fa-circle-check"></i> Format = instant usability</div>
+      </div>
+    </div>
+    <div class="bp-card reveal reveal-delay-3">
+      <div class="bp-icon"><i class="fas fa-clone"></i></div>
+      <div>
+        <h3>Use Examples</h3>
+        <p>Include one or more examples of the input-output pairs you expect. Examples are more powerful than descriptions — they show the model the exact pattern you want instead of asking it to imagine one.</p>
+        <div class="bp-check"><i class="fas fa-circle-check"></i> Examples anchor output pattern</div>
+      </div>
+    </div>
+    <div class="bp-card reveal">
+      <div class="bp-icon"><i class="fas fa-scissors"></i></div>
+      <div>
+        <h3>Break Complex Tasks</h3>
+        <p>If a task has many components, don't try to solve it all in one prompt. Split it into smaller sub-tasks. Feed the output of one prompt as the input to the next — this is called "prompt chaining."</p>
+        <div class="bp-check"><i class="fas fa-circle-check"></i> Decomposition improves accuracy</div>
+      </div>
+    </div>
+    <div class="bp-card reveal reveal-delay-1">
+      <div class="bp-icon"><i class="fas fa-ban"></i></div>
+      <div>
+        <h3>Avoid Ambiguity</h3>
+        <p>Words like "good", "nice", "quick", or "a few" are ambiguous. Replace them with measurable, concrete terms. Instead of "write a short email", say "write an email under 100 words." Precision always wins.</p>
+        <div class="bp-check"><i class="fas fa-circle-check"></i> Precision prevents misinterpretation</div>
+      </div>
+    </div>
+    <div class="bp-card reveal reveal-delay-2">
+      <div class="bp-icon"><i class="fas fa-rotate"></i></div>
+      <div>
+        <h3>Iterate Your Prompts</h3>
+        <p>Prompt engineering is not a one-shot process. If the first response isn't perfect, refine your prompt — add more constraints, change the role, restructure instructions, or add an example. Iteration is the key to mastery.</p>
+        <div class="bp-check"><i class="fas fa-circle-check"></i> Refinement is the real skill</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 4: MISTAKES ══ -->
+<section id="mistakes" style="background:var(--bg);">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fas fa-triangle-exclamation"></i> Watch Out</div>
+    <h2 class="section-title">Common Mistakes Beginners Make</h2>
+    <p class="section-sub">Avoiding these pitfalls will save you hours of re-prompting and frustration. Study each one carefully — beginners make these mistakes constantly.</p>
+  </div>
+
+  <div class="mistake-grid">
+    <div class="mistake-card reveal">
+      <div class="mistake-icon">🌫️</div>
+      <h3>Way Too Vague</h3>
+      <p>Asking incredibly broad questions without any direction produces generic, shallow responses that aren't useful for any real task.</p>
+      <div class="mistake-example">
+        <div class="mistake-example-label">❌ Bad Prompt</div>
+        "Tell me about technology."
+      </div>
+    </div>
+    <div class="mistake-card reveal reveal-delay-1">
+      <div class="mistake-icon">📦</div>
+      <h3>Information Overload</h3>
+      <p>Dumping an extremely long, unstructured wall of text confuses the AI about what's actually important and what the primary task is.</p>
+      <div class="mistake-example">
+        <div class="mistake-example-label">❌ Bad Prompt</div>
+        [5 paragraphs of background] "...so what do you think I should do?"
+      </div>
+    </div>
+    <div class="mistake-card reveal reveal-delay-2">
+      <div class="mistake-icon">🎲</div>
+      <h3>No Output Format</h3>
+      <p>Without specifying format, the AI decides for you — and you may get a long essay when you needed a table, or vice versa. Always define what you want the output to look like.</p>
+      <div class="mistake-example">
+        <div class="mistake-example-label">❌ Bad Prompt</div>
+        "Compare Python and JavaScript."
+        <br/>
+        <span style="color:var(--neon-green);font-size:11px">✅ Better: "Compare Python and JavaScript in a 5-row table with columns: Feature, Python, JavaScript"</span>
+      </div>
+    </div>
+    <div class="mistake-card reveal reveal-delay-3">
+      <div class="mistake-icon">⚡</div>
+      <h3>Conflicting Instructions</h3>
+      <p>Giving contradictory requirements (e.g., "be brief but include everything") confuses the model and results in an inconsistent output that satisfies neither requirement.</p>
+      <div class="mistake-example">
+        <div class="mistake-example-label">❌ Bad Prompt</div>
+        "Write a very short and extremely detailed comprehensive guide."
+      </div>
+    </div>
+    <div class="mistake-card reveal">
+      <div class="mistake-icon">🕳️</div>
+      <h3>Missing Context</h3>
+      <p>Asking a question that assumes the AI knows your background, project, or situation without providing any details. The AI has no memory of who you are or what you're building.</p>
+      <div class="mistake-example">
+        <div class="mistake-example-label">❌ Bad Prompt</div>
+        "Fix the bug in my code."
+        <br/>
+        <span style="color:var(--neon-green);font-size:11px">✅ Better: Paste the code + describe the error + explain what it should do</span>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 5: WORKFLOW ══ -->
+<section id="workflow">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fas fa-diagram-project"></i> Process</div>
+    <h2 class="section-title">Prompt Engineering Workflow</h2>
+    <p class="section-sub">A great prompt doesn't happen in isolation. Follow this proven 5-step workflow every time you work with AI to get consistently excellent results.</p>
+  </div>
+
+  <div class="workflow-wrap reveal">
+    <div class="wf-step wf1" style="animation-delay:.1s">
+      <div class="wf-num">STEP 01</div>
+      <div class="wf-icon"><i class="fas fa-keyboard"></i></div>
+      <div class="wf-title">User Input</div>
+      <div class="wf-desc">Define your goal, constraints, and what a perfect output looks like.</div>
+    </div>
+    <div class="wf-arrow"><i class="fas fa-chevron-right"></i></div>
+    <div class="wf-step wf2" style="animation-delay:.2s">
+      <div class="wf-num">STEP 02</div>
+      <div class="wf-icon"><i class="fas fa-pen-ruler"></i></div>
+      <div class="wf-title">Prompt Design</div>
+      <div class="wf-desc">Choose a technique, add context, set role, define output format.</div>
+    </div>
+    <div class="wf-arrow"><i class="fas fa-chevron-right"></i></div>
+    <div class="wf-step wf3" style="animation-delay:.3s">
+      <div class="wf-num">STEP 03</div>
+      <div class="wf-icon"><i class="fas fa-microchip"></i></div>
+      <div class="wf-title">AI Processing</div>
+      <div class="wf-desc">The model tokenizes, reasons, and generates output from your prompt.</div>
+    </div>
+    <div class="wf-arrow"><i class="fas fa-chevron-right"></i></div>
+    <div class="wf-step wf4" style="animation-delay:.4s">
+      <div class="wf-num">STEP 04</div>
+      <div class="wf-icon"><i class="fas fa-comment-dots"></i></div>
+      <div class="wf-title">Response Generation</div>
+      <div class="wf-desc">AI produces output. Evaluate accuracy, format, and relevance.</div>
+    </div>
+    <div class="wf-arrow"><i class="fas fa-chevron-right"></i></div>
+    <div class="wf-step wf5" style="animation-delay:.5s">
+      <div class="wf-num">STEP 05</div>
+      <div class="wf-icon"><i class="fas fa-arrows-rotate"></i></div>
+      <div class="wf-title">Refinement</div>
+      <div class="wf-desc">Iterate and adjust the prompt until output meets your standards.</div>
+    </div>
+  </div>
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 6: REAL-WORLD SCENARIOS ══ -->
+<section id="scenarios">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fas fa-flask"></i> Real-World Practice</div>
+    <h2 class="section-title">5 Real-Time Scenario Examples</h2>
+    <p class="section-sub">See exactly how prompt engineering is applied across 5 real industries — with full prompts, expected outputs, and which technique is being used. Click any scenario to expand it.</p>
+  </div>
+
+  <!-- TAB FILTERS -->
+  <div class="scenario-tabs reveal">
+    <button class="stab active" onclick="filterScenario('all',this)">All Scenarios</button>
+    <button class="stab" onclick="filterScenario('tech',this)">Tech / Dev</button>
+    <button class="stab" onclick="filterScenario('hr',this)">HR / Hiring</button>
+    <button class="stab" onclick="filterScenario('ecom',this)">E-Commerce</button>
+    <button class="stab" onclick="filterScenario('edu',this)">Education</button>
+    <button class="stab" onclick="filterScenario('health',this)">Healthcare</button>
+  </div>
+
+  <!-- SCENARIO 1: TECH -->
+  <div class="scenario-card reveal" data-cat="tech" id="sc1">
+    <div class="sc-head" onclick="toggleScenario('sc1')">
+      <span class="sc-num">01</span>
+      <span class="sc-title">AI-Powered Code Review Assistant for a Dev Team</span>
+      <span class="sc-industry">Tech / Dev</span>
+      <i class="fas fa-chevron-right sc-arrow"></i>
+    </div>
+    <div class="sc-body">
+      <div class="sc-grid">
+        <div class="sc-box">
+          <div class="sc-box-label">🏢 Real Scenario</div>
+          <div class="sc-box-text">A startup has a team of 5 junior developers. Their senior engineer wants to use AI to review code PRs (Pull Requests) automatically before human review — catching bugs, bad practices, and suggesting improvements.</div>
+        </div>
+        <div class="sc-box">
+          <div class="sc-box-label">🎯 Business Goal</div>
+          <div class="sc-box-text">Reduce review time by 60%, catch common bugs early, enforce coding standards, and help juniors learn best practices — without burning out the senior engineer with repetitive reviews.</div>
+        </div>
+      </div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">📝 Prompt Used (Role-Based + Instruction Prompting)</div>
+      <div class="sc-prompt">Act as a senior software engineer with 10 years of experience in Python and REST APIs.
+
+Review the following Python function and provide feedback on:
+1. Bugs or logic errors
+2. Security vulnerabilities (e.g. SQL injection, unvalidated inputs)
+3. Performance issues
+4. Code readability and naming conventions
+5. Suggested improvements with corrected code
+
+Format your response as:
+- [ISSUE TYPE]: Description of the problem
+- [LINE]: Line number affected
+- [FIX]: Corrected code snippet
+
+Code to review:
+```python
+def get_user(user_id):
+    query = "SELECT * FROM users WHERE id = " + user_id
+    result = db.execute(query)
+    return result
+```</div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">🤖 AI Output</div>
+      <div class="sc-output">- [ISSUE TYPE]: Critical Security Vulnerability — SQL Injection
+- [LINE]: Line 2
+- [FIX]: Use parameterized queries:
+  query = "SELECT * FROM users WHERE id = ?"
+  result = db.execute(query, (user_id,))
+
+- [ISSUE TYPE]: Missing Input Validation
+- [LINE]: Line 1
+- [FIX]: Validate that user_id is an integer before use:
+  if not isinstance(user_id, int): raise ValueError("Invalid user_id")
+
+- [ISSUE TYPE]: Overly broad SELECT *
+- [LINE]: Line 2
+- [FIX]: Specify required columns to reduce data exposure and improve performance.</div>
+
+      <div class="sc-tag-row">
+        <span class="sc-tag type-tag">Role-Based Prompting</span>
+        <span class="sc-tag type-tag">Instruction Prompting</span>
+        <span class="sc-tag">Python</span>
+        <span class="sc-tag">Code Review</span>
+        <span class="sc-tag">Security</span>
+      </div>
+
+      <div class="sc-box" style="margin-top:14px;border-color:rgba(0,255,136,.12);background:rgba(0,255,136,.03)">
+        <div class="sc-box-label" style="color:var(--neon-green)">✅ Why This Works in a Real Project</div>
+        <div class="sc-box-text">By assigning a senior engineer role + giving structured instructions with numbered points and a fixed output format, the AI consistently returns actionable, formatted reviews — not vague suggestions. This prompt can be integrated into a GitHub Actions CI pipeline to auto-comment on PRs.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 2: HR -->
+  <div class="scenario-card reveal" data-cat="hr" id="sc2">
+    <div class="sc-head" onclick="toggleScenario('sc2')">
+      <span class="sc-num">02</span>
+      <span class="sc-title">Automated Resume Screening System for an HR Team</span>
+      <span class="sc-industry">HR / Hiring</span>
+      <i class="fas fa-chevron-right sc-arrow"></i>
+    </div>
+    <div class="sc-body">
+      <div class="sc-grid">
+        <div class="sc-box">
+          <div class="sc-box-label">🏢 Real Scenario</div>
+          <div class="sc-box-text">An HR team at a mid-size company receives 300+ resumes per week for software engineering roles. Manually reviewing each one takes 3–4 days. They want AI to do initial screening and shortlisting.</div>
+        </div>
+        <div class="sc-box">
+          <div class="sc-box-label">🎯 Business Goal</div>
+          <div class="sc-box-text">Shortlist top 20 candidates from 300 applications based on skills, experience, and job requirements — in minutes instead of days. Eliminate bias and ensure consistency in evaluation criteria.</div>
+        </div>
+      </div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">📝 Prompt Used (Few-Shot + Contextual Prompting)</div>
+      <div class="sc-prompt">You are an expert HR screener for a software company. Evaluate the resume below against our job requirements and score it from 1–10.
+
+Job Requirements:
+- Role: Backend Developer (Python, 2+ years)
+- Must have: REST API, SQL, Git
+- Nice to have: Docker, AWS, FastAPI
+- Soft skills: team player, communication
+
+Scoring Guide (Few-Shot Examples):
+Resume A: Python 3yr, FastAPI, Docker, AWS, open-source contributor → Score: 9/10
+Resume B: Python 1yr, basic SQL, no API experience → Score: 4/10
+Resume C: Python 2yr, REST API, PostgreSQL, Git, team projects → Score: 7/10
+
+Now evaluate this resume:
+[Candidate: Arjun Sharma]
+- 2.5 years Python developer at Infosys
+- Built REST APIs using Flask and FastAPI
+- Used PostgreSQL and Redis daily
+- Familiar with Docker (personal projects)
+- GitHub: 3 open-source contributions
+- B.Tech CSE, VIT University 2021
+
+Respond in this format:
+Score: X/10
+Strengths: [bullet list]
+Gaps: [bullet list]
+Decision: Shortlist / Hold / Reject
+Reason: [1–2 sentences]</div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">🤖 AI Output</div>
+      <div class="sc-output">Score: 8/10
+
+Strengths:
+• 2.5 years Python experience (exceeds 2yr minimum)
+• Direct REST API experience using FastAPI (preferred stack)
+• PostgreSQL + Redis shows strong database skills
+• Docker familiarity adds value
+• Open-source contributions signal initiative and code quality
+
+Gaps:
+• No AWS/cloud experience listed
+• Redis mentioned but not SQL explicitly (assumed from PostgreSQL)
+
+Decision: Shortlist
+Reason: Arjun meets all must-have requirements and shows strong alignment with the preferred stack. Recommend scheduling a technical screening round.</div>
+
+      <div class="sc-tag-row">
+        <span class="sc-tag type-tag">Few-Shot Prompting</span>
+        <span class="sc-tag type-tag">Contextual Prompting</span>
+        <span class="sc-tag">HR Automation</span>
+        <span class="sc-tag">Recruitment</span>
+        <span class="sc-tag">Scoring</span>
+      </div>
+
+      <div class="sc-box" style="margin-top:14px;border-color:rgba(0,255,136,.12);background:rgba(0,255,136,.03)">
+        <div class="sc-box-label" style="color:var(--neon-green)">✅ Why This Works in a Real Project</div>
+        <div class="sc-box-text">Few-shot examples calibrate the AI's scoring scale. The fixed output format (Score / Strengths / Gaps / Decision) makes it easy to build a dashboard that reads AI responses and auto-populates a shortlist spreadsheet. Companies like Unilever and HireVue already use AI screening built on similar prompting patterns.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 3: E-COMMERCE -->
+  <div class="scenario-card reveal" data-cat="ecom" id="sc3">
+    <div class="sc-head" onclick="toggleScenario('sc3')">
+      <span class="sc-num">03</span>
+      <span class="sc-title">Dynamic Product Description Generator for an Online Store</span>
+      <span class="sc-industry">E-Commerce</span>
+      <i class="fas fa-chevron-right sc-arrow"></i>
+    </div>
+    <div class="sc-body">
+      <div class="sc-grid">
+        <div class="sc-box">
+          <div class="sc-box-label">🏢 Real Scenario</div>
+          <div class="sc-box-text">A fashion e-commerce startup has 2,000 new products every season. Writing unique, SEO-optimized product descriptions manually for each item takes their 3-person content team 6 weeks per season.</div>
+        </div>
+        <div class="sc-box">
+          <div class="sc-box-label">🎯 Business Goal</div>
+          <div class="sc-box-text">Generate 2,000 unique, engaging, SEO-ready product descriptions in 2–3 days instead of 6 weeks. Maintain consistent brand voice. Improve click-through rate with compelling copy that includes target keywords naturally.</div>
+        </div>
+      </div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">📝 Prompt Used (Instruction + One-Shot Prompting)</div>
+      <div class="sc-prompt">You are a professional e-commerce copywriter specializing in fashion retail. Write a product description for the item below.
+
+Requirements:
+- Length: 80–100 words
+- Tone: Aspirational, warm, and modern
+- Include the SEO keyword naturally (do not force it)
+- Structure: 1 hook sentence → 2 feature sentences → 1 CTA sentence
+- Avoid generic phrases like "high quality" or "perfect for everyone"
+
+Example output for reference:
+Product: White Linen Shirt | SEO Keyword: "breathable linen shirt"
+Output: "Step into effortless summer style with our classic white linen shirt. Crafted from 100% natural linen, it keeps you cool and wrinkle-resistant through long days. The relaxed fit and subtle texture make it perfect for beach brunches or city evenings. Yours in sizes XS–3XL — dress it up or down, always with ease."
+
+Now write for:
+Product: Navy Blue Chinos | SEO Keyword: "slim-fit chinos for men"
+Material: Stretch cotton blend, 4-pocket design
+Target Customer: Urban professional men, 25–35</div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">🤖 AI Output</div>
+      <div class="sc-output">"Redefine your work-to-weekend wardrobe with our Navy Blue slim-fit chinos for men. Made from a premium stretch cotton blend, they move with you through back-to-back meetings and evening hangouts without losing their sharp silhouette. Four functional pockets and a refined navy tone mean you're always ready — pair with a white tee or a crisp oxford shirt. Available in sizes 28–40. Look sharp, live easy."</div>
+
+      <div class="sc-tag-row">
+        <span class="sc-tag type-tag">One-Shot Prompting</span>
+        <span class="sc-tag type-tag">Instruction Prompting</span>
+        <span class="sc-tag type-tag">Role-Based Prompting</span>
+        <span class="sc-tag">SEO</span>
+        <span class="sc-tag">Content Generation</span>
+        <span class="sc-tag">E-Commerce</span>
+      </div>
+
+      <div class="sc-box" style="margin-top:14px;border-color:rgba(0,255,136,.12);background:rgba(0,255,136,.03)">
+        <div class="sc-box-label" style="color:var(--neon-green)">✅ Why This Works in a Real Project</div>
+        <div class="sc-box-text">One example anchors the AI to the exact brand tone and structure. Word count constraints ensure consistency. This prompt can be fed into a Python script that reads a product CSV, calls the OpenAI/Claude API for each row, and writes descriptions back — processing 2,000 products overnight at near-zero cost.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 4: EDUCATION -->
+  <div class="scenario-card reveal" data-cat="edu" id="sc4">
+    <div class="sc-head" onclick="toggleScenario('sc4')">
+      <span class="sc-num">04</span>
+      <span class="sc-title">Personalized Tutor Chatbot for a Learning Platform</span>
+      <span class="sc-industry">Education</span>
+      <i class="fas fa-chevron-right sc-arrow"></i>
+    </div>
+    <div class="sc-body">
+      <div class="sc-grid">
+        <div class="sc-box">
+          <div class="sc-box-label">🏢 Real Scenario</div>
+          <div class="sc-box-text">An EdTech startup builds a math tutoring app for Class 8–10 students. Instead of one generic chatbot, they want the AI to adapt its explanation depth based on the student's stated level — beginner, intermediate, or advanced.</div>
+        </div>
+        <div class="sc-box">
+          <div class="sc-box-label">🎯 Business Goal</div>
+          <div class="sc-box-text">Give each student a personalized learning experience. A beginner should get a simple analogy-based explanation; an advanced student should get the formula derivation and edge cases — all from the same topic, same AI, different prompt context.</div>
+        </div>
+      </div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">📝 Prompt Used (Role-Based + Contextual + Chain-of-Thought)</div>
+      <div class="sc-prompt">You are a friendly, patient math tutor for school students. Adapt your explanation strictly to the student's level.
+
+Student Profile:
+- Name: Priya
+- Grade: 9th Standard
+- Level: Beginner
+- Topic: Quadratic Equations
+- Priya's question: "What is a quadratic equation? I don't understand it at all."
+
+Instructions:
+- Do NOT use complex math symbols in the first explanation
+- Use a simple real-life analogy first
+- Then slowly introduce the formula
+- Show one worked example step-by-step using "Let's think through this together:"
+- End with one practice problem at her level
+- Tone: Warm, encouraging, never condescending</div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">🤖 AI Output</div>
+      <div class="sc-output">Hi Priya! Great question — let's make this super easy. 😊
+
+Imagine you're trying to find out what number, when multiplied by itself, gives you 9. That mystery number is what algebra helps us find. A quadratic equation is just a fancier version of this idea — where we work with a number squared (like x²).
+
+The basic form looks like this: ax² + bx + c = 0
+
+Let's think through this together:
+Say the equation is x² - 5x + 6 = 0
+Step 1: We need two numbers that multiply to 6 and add to -5. That's -2 and -3.
+Step 2: So we write: (x - 2)(x - 3) = 0
+Step 3: Either x = 2 or x = 3. Both are answers! ✅
+
+Your turn: Try solving x² - 7x + 10 = 0. Hint: Think of two numbers that multiply to 10.</div>
+
+      <div class="sc-tag-row">
+        <span class="sc-tag type-tag">Role-Based Prompting</span>
+        <span class="sc-tag type-tag">Contextual Prompting</span>
+        <span class="sc-tag type-tag">Chain-of-Thought</span>
+        <span class="sc-tag">EdTech</span>
+        <span class="sc-tag">Adaptive Learning</span>
+      </div>
+
+      <div class="sc-box" style="margin-top:14px;border-color:rgba(0,255,136,.12);background:rgba(0,255,136,.03)">
+        <div class="sc-box-label" style="color:var(--neon-green)">✅ Why This Works in a Real Project</div>
+        <div class="sc-box-text">The student's level, name, and grade are injected dynamically from the app's user database. Changing "Beginner" to "Advanced" in the context instantly changes the entire response style. This is how platforms like Khan Academy's Khanmigo and Duolingo's AI tutor are architecturally designed — same model, context-driven personalization.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO 5: HEALTHCARE -->
+  <div class="scenario-card reveal" data-cat="health" id="sc5">
+    <div class="sc-head" onclick="toggleScenario('sc5')">
+      <span class="sc-num">05</span>
+      <span class="sc-title">Patient Symptom Summarizer for a Hospital's Digital System</span>
+      <span class="sc-industry">Healthcare</span>
+      <i class="fas fa-chevron-right sc-arrow"></i>
+    </div>
+    <div class="sc-body">
+      <div class="sc-grid">
+        <div class="sc-box">
+          <div class="sc-box-label">🏢 Real Scenario</div>
+          <div class="sc-box-text">A hospital's digital check-in system collects free-text symptom descriptions from patients in a chatbot interface. Before the doctor sees the patient, the system needs to produce a concise, structured clinical summary from the unstructured patient input.</div>
+        </div>
+        <div class="sc-box">
+          <div class="sc-box-label">🎯 Business Goal</div>
+          <div class="sc-box-text">Save doctors 3–5 minutes per patient (adds up to 1–2 hours/day) by auto-generating a structured clinical summary. Flag urgency levels. Identify key symptoms for triage. Reduce errors from misread handwritten notes.</div>
+        </div>
+      </div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">📝 Prompt Used (Instruction + Step-by-Step + Contextual)</div>
+      <div class="sc-prompt">You are a clinical documentation assistant at a hospital. Your role is to convert a patient's free-text symptom description into a structured pre-consultation medical summary for the attending doctor.
+
+Important rules:
+- Do NOT diagnose the patient
+- Do NOT recommend medications
+- Only organize and summarize what the patient reported
+- Flag urgency as: LOW / MEDIUM / HIGH based on symptom severity indicators
+- Use standard clinical language where appropriate
+
+Patient Input (verbatim):
+"I've been having really bad chest pain since this morning, on the left side. It gets worse when I breathe deeply or lie down. I also feel a bit short of breath and my heart felt like it was racing for about 10 minutes around noon. I don't have fever but I feel very tired. I'm 45 years old and I have high blood pressure, I take amlodipine 5mg daily."
+
+Generate a structured summary in this format:
+1. Chief Complaint
+2. Symptom Details (onset, location, character, severity, aggravating/relieving factors)
+3. Associated Symptoms
+4. Relevant Medical History & Medications
+5. Urgency Flag with brief rationale</div>
+
+      <div class="sc-box-label" style="margin-bottom:8px">🤖 AI Output</div>
+      <div class="sc-output">1. Chief Complaint: Left-sided chest pain, onset this morning
+
+2. Symptom Details:
+   • Onset: Acute, started this morning
+   • Location: Left chest
+   • Character: Not specified (pressure vs sharp — clarify with patient)
+   • Aggravating factors: Deep breathing, supine position
+   • Relieving factors: Not reported
+
+3. Associated Symptoms:
+   • Dyspnea (shortness of breath)
+   • Palpitations (~10 min episode at 12:00 PM)
+   • Fatigue (generalized)
+   • No fever reported
+
+4. Medical History & Medications:
+   • Known hypertension
+   • Current medication: Amlodipine 5mg/day
+
+5. ⚠️ Urgency Flag: HIGH
+   Rationale: Left-sided chest pain with dyspnea and palpitations in a 45-year-old hypertensive patient warrants immediate cardiac evaluation to rule out ACS or arrhythmia.</div>
+
+      <div class="sc-tag-row">
+        <span class="sc-tag type-tag">Instruction Prompting</span>
+        <span class="sc-tag type-tag">Step-by-Step Prompting</span>
+        <span class="sc-tag type-tag">Contextual Prompting</span>
+        <span class="sc-tag">Healthcare</span>
+        <span class="sc-tag">Clinical NLP</span>
+        <span class="sc-tag">Triage</span>
+      </div>
+
+      <div class="sc-box" style="margin-top:14px;border-color:rgba(0,255,136,.12);background:rgba(0,255,136,.03)">
+        <div class="sc-box-label" style="color:var(--neon-green)">✅ Why This Works in a Real Project</div>
+        <div class="sc-box-text">Strict guardrails ("do NOT diagnose") keep the AI within safe, legal boundaries. The structured output format integrates directly into the hospital's EMR (Electronic Medical Record) system via API. Systems like this are used by companies including Nuance DAX, Suki AI, and Abridge in real clinical environments today.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 7: WHERE TO USE IN REAL PROJECTS ══ -->
+<section id="projectuse" style="background:var(--bg);">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fas fa-briefcase"></i> Project Integration</div>
+    <h2 class="section-title">Where to Use Prompt Engineering in Real Projects</h2>
+    <p class="section-sub">Every prompting technique maps to specific real-world project contexts. This guide tells you exactly which technique to pick — and where to plug it into your product or workflow.</p>
+  </div>
+
+  <div class="pu-grid">
+
+    <div class="pu-card pu-c1 reveal">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-robot"></i></div>
+        <div>
+          <h3>Chatbots & Virtual Assistants</h3>
+          <div class="pu-domain">// customer-support · internal-tools</div>
+        </div>
+      </div>
+      <div class="pu-desc">Every conversational AI product relies on prompt engineering to define the bot's personality, scope, and response quality. The prompt is the "soul" of the chatbot — it determines how it speaks, what it knows, and what it refuses to answer.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">Role-Based</span>
+        <span class="pu-tech">Contextual</span>
+        <span class="pu-tech">Instruction</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>Customer support bot</b> — role-based prompt defines the agent as "a helpful Zomato support rep" with access to order context injected per session</div>
+        <div class="pu-example"><b>HR helpdesk bot</b> — contextual prompt injects company policy docs so the bot answers questions about leave, payroll, and benefits accurately</div>
+        <div class="pu-example"><b>Sales qualification bot</b> — few-shot prompt trains the bot to identify high-intent leads based on conversation patterns</div>
+      </div>
+    </div>
+
+    <div class="pu-card pu-c2 reveal reveal-delay-1">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-code"></i></div>
+        <div>
+          <h3>AI-Assisted Development Tools</h3>
+          <div class="pu-domain">// IDE plugins · CI/CD pipelines</div>
+        </div>
+      </div>
+      <div class="pu-desc">Code generation, review, debugging, and documentation are already being automated using prompt engineering in dev tools. From GitHub Copilot to internal scripts, developers use structured prompts to make AI a reliable coding partner.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">Role-Based</span>
+        <span class="pu-tech">Chain-of-Thought</span>
+        <span class="pu-tech">Instruction</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>PR code reviewer</b> — instruction prompt with output format feeds into GitHub Actions to auto-comment on pull requests</div>
+        <div class="pu-example"><b>Bug explainer</b> — chain-of-thought prompt asks AI to reason through error messages step by step before suggesting a fix</div>
+        <div class="pu-example"><b>Auto-docstring generator</b> — zero-shot prompt generates Python docstrings for every function in a codebase during a CI run</div>
+      </div>
+    </div>
+
+    <div class="pu-card pu-c3 reveal reveal-delay-2">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-pen-nib"></i></div>
+        <div>
+          <h3>Content Generation Pipelines</h3>
+          <div class="pu-domain">// marketing · SEO · social media</div>
+        </div>
+      </div>
+      <div class="pu-desc">Marketing teams use prompt engineering to produce blog posts, ad copy, social media captions, email campaigns, and product descriptions at scale — maintaining brand voice without hiring 20 copywriters.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">One-Shot</span>
+        <span class="pu-tech">Instruction</span>
+        <span class="pu-tech">Contextual</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>SEO blog factory</b> — one-shot prompt with a reference article generates 50 blog drafts per day from a topic list CSV</div>
+        <div class="pu-example"><b>Ad copy A/B variants</b> — instruction prompt generates 5 variations of the same ad with different emotional hooks for testing</div>
+        <div class="pu-example"><b>Email campaign writer</b> — contextual prompt injects customer segment data to personalize email subject lines and body copy</div>
+      </div>
+    </div>
+
+    <div class="pu-card pu-c4 reveal">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-magnifying-glass-chart"></i></div>
+        <div>
+          <h3>Data Analysis & Reporting</h3>
+          <div class="pu-domain">// analytics · BI tools · dashboards</div>
+        </div>
+      </div>
+      <div class="pu-desc">Analysts use prompt engineering to extract insights from raw data, generate executive summaries from reports, classify survey responses, and build natural-language interfaces for dashboards — without writing complex SQL or Python every time.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">Chain-of-Thought</span>
+        <span class="pu-tech">Few-Shot</span>
+        <span class="pu-tech">Step-by-Step</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>Monthly report summarizer</b> — step-by-step prompt turns 20-page financial reports into a 300-word executive brief automatically</div>
+        <div class="pu-example"><b>Survey classifier</b> — few-shot prompt categorizes 1,000 open-text customer responses into themes for NPS analysis</div>
+        <div class="pu-example"><b>SQL query generator</b> — chain-of-thought prompt reasons through a business question ("which regions underperformed?") to produce correct SQL</div>
+      </div>
+    </div>
+
+    <div class="pu-card pu-c5 reveal reveal-delay-1">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div>
+          <h3>EdTech & Learning Platforms</h3>
+          <div class="pu-domain">// tutoring apps · LMS · assessments</div>
+        </div>
+      </div>
+      <div class="pu-desc">Education platforms use prompt engineering to build adaptive tutors, generate practice questions, provide instant feedback, and create personalized learning paths — making quality education accessible at any scale.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">Role-Based</span>
+        <span class="pu-tech">Contextual</span>
+        <span class="pu-tech">Chain-of-Thought</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>Adaptive tutor</b> — contextual prompt injects student's current level and past mistakes so explanations adapt automatically</div>
+        <div class="pu-example"><b>MCQ generator</b> — instruction prompt generates 20 test questions with answer keys from any uploaded chapter or topic</div>
+        <div class="pu-example"><b>Essay feedback tool</b> — role-based prompt ("act as a CBSE exam evaluator") scores student essays with specific, rubric-aligned comments</div>
+      </div>
+    </div>
+
+    <div class="pu-card pu-c6 reveal reveal-delay-2">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-file-contract"></i></div>
+        <div>
+          <h3>Legal & Document Intelligence</h3>
+          <div class="pu-domain">// contract review · compliance · legal tech</div>
+        </div>
+      </div>
+      <div class="pu-desc">Legal teams and compliance departments use prompt engineering to review contracts, extract key clauses, flag risks, summarize dense legal documents, and check policy compliance — reducing hours of manual reading to minutes.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">Instruction</span>
+        <span class="pu-tech">Contextual</span>
+        <span class="pu-tech">Few-Shot</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>Contract clause extractor</b> — instruction prompt identifies payment terms, termination clauses, and liability caps from uploaded PDFs</div>
+        <div class="pu-example"><b>Risk flagging system</b> — few-shot prompt trained on sample risky clauses identifies similar patterns in new contracts</div>
+        <div class="pu-example"><b>Policy compliance checker</b> — contextual prompt injects company policy docs to check whether a new vendor agreement violates internal rules</div>
+      </div>
+    </div>
+
+    <div class="pu-card pu-c7 reveal">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-heart-pulse"></i></div>
+        <div>
+          <h3>Healthcare & Clinical Tools</h3>
+          <div class="pu-domain">// EMR systems · triage · patient care</div>
+        </div>
+      </div>
+      <div class="pu-desc">Healthcare AI applications are among the most sensitive — and most impactful. Prompt engineering is used to build clinical summarizers, triage assistants, patient-facing symptom checkers, and medical documentation tools that assist (not replace) doctors.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">Instruction</span>
+        <span class="pu-tech">Step-by-Step</span>
+        <span class="pu-tech">Role-Based</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>Symptom summarizer</b> — instruction prompt with strict guardrails converts patient free-text input into structured clinical notes for doctors</div>
+        <div class="pu-example"><b>Discharge summary writer</b> — step-by-step prompt generates patient discharge instructions from doctor's clinical notes in patient-friendly language</div>
+        <div class="pu-example"><b>Drug interaction checker</b> — contextual prompt cross-references a patient's medication list against a knowledge base to flag known interactions</div>
+      </div>
+    </div>
+
+    <div class="pu-card pu-c8 reveal reveal-delay-1">
+      <div class="pu-icon-row">
+        <div class="pu-icon"><i class="fas fa-headset"></i></div>
+        <div>
+          <h3>Customer Experience & CRM</h3>
+          <div class="pu-domain">// support · ticketing · feedback</div>
+        </div>
+      </div>
+      <div class="pu-desc">CX teams use prompt engineering to auto-categorize support tickets, generate empathetic replies, summarize customer feedback, and route conversations to the right team — dramatically cutting response times and improving satisfaction scores.</div>
+      <div class="pu-techniques">
+        <span class="pu-tech">Few-Shot</span>
+        <span class="pu-tech">Zero-Shot</span>
+        <span class="pu-tech">Contextual</span>
+      </div>
+      <div class="pu-examples">
+        <div class="pu-example"><b>Ticket classifier</b> — few-shot prompt auto-tags incoming support tickets as Billing / Technical / Delivery / General with 90%+ accuracy</div>
+        <div class="pu-example"><b>Reply drafts</b> — contextual prompt injects the customer's history and ticket details to generate a personalized, empathetic response draft</div>
+        <div class="pu-example"><b>CSAT analyzer</b> — zero-shot prompt classifies hundreds of customer satisfaction survey comments into actionable themes for the product team</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<div class="sep"></div>
+
+<!-- ══ SECTION 8: GOLDEN TEMPLATE ══ -->
+<section id="golden" style="background:var(--bg);">
+  <div class="section-header reveal" style="text-align:center; align-items:center; display:flex; flex-direction:column;">
+    <div class="section-tag"><i class="fas fa-trophy"></i> Bonus Section</div>
+    <h2 class="section-title">The Golden Prompt Template</h2>
+    <p class="section-sub" style="text-align:center">Use this professional, reusable template for any complex task. Fill in each field and instantly create a high-quality prompt that covers all the essentials.</p>
+  </div>
+
+  <div class="golden-wrap reveal">
+    <div class="golden-header">
+      <div class="golden-title"><i class="fas fa-trophy" style="color:#fbbf24"></i> golden-prompt-template.txt</div>
+      <button class="copy-btn" onclick="copyGoldenTemplate()"><i class="fas fa-copy"></i> Copy Template</button>
+    </div>
+    <div class="golden-body" id="golden-content">
+      <div class="template-row">
+        <div class="template-key">ROLE</div>
+        <div class="template-val">Act as a <em>[job title / expert persona]</em>. You are highly experienced in <em>[domain / field]</em> and always provide practical, actionable advice.</div>
+      </div>
+      <div class="template-row">
+        <div class="template-key">TASK</div>
+        <div class="template-val">Your task is to <em>[clearly describe what needs to be done]</em>. Be thorough and address all aspects of the request.</div>
+      </div>
+      <div class="template-row">
+        <div class="template-key">CONTEXT</div>
+        <div class="template-val">Here is the relevant background information: <em>[user's situation, data, or document content]</em>. My audience is <em>[target reader]</em>. The purpose is <em>[why this is needed]</em>.</div>
+      </div>
+      <div class="template-row">
+        <div class="template-key">INSTRUCTIONS</div>
+        <div class="template-val">Follow these specific guidelines: <em>[list of do's and don'ts, tone requirements, length limits, specific requirements]</em>. Ensure each point is covered sequentially.</div>
+      </div>
+      <div class="template-row">
+        <div class="template-key">OUTPUT FORMAT</div>
+        <div class="template-val">Respond in the following format: <em>[numbered list / table / JSON / markdown / plain text / specific template]</em>. Keep the response under <em>[word/character limit]</em>.</div>
+      </div>
+      <div class="template-row">
+        <div class="template-key">CONSTRAINTS</div>
+        <div class="template-val">Important constraints to respect: <em>[language restrictions, what NOT to include, assumptions to avoid, safety or ethical boundaries]</em>.</div>
+      </div>
+    </div>
+    <div style="padding:0 32px 28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+      <button class="copy-template-btn" onclick="copyGoldenTemplate()">
+        <i class="fas fa-copy"></i> Copy Full Template
+      </button>
+      <span style="font-size:13px; color:var(--text-muted); font-family:var(--font-mono)">// Paste into any AI tool and fill in the fields</span>
+    </div>
+  </div>
+</section>
+<div class="sep"></div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-logo">⚡ Prompt Engineering Notes</div>
+  <div class="footer-tag">Designed for GenAI Freshers — Start Simple, Think Big</div>
+  <div style="display:flex;justify-content:center;gap:32px;margin:24px 0;flex-wrap:wrap;">
+    <a href="#hero" style="color:var(--text-muted);text-decoration:none;font-size:13px;transition:color .2s" onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color='var(--text-muted)'">↑ Back to Top</a>
+    <span style="color:var(--text-dim)">·</span>
+    <a href="#types" style="color:var(--text-muted);text-decoration:none;font-size:13px;transition:color .2s" onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color='var(--text-muted)'">8 Techniques</a>
+    <span style="color:var(--text-dim)">·</span>
+    <a href="#golden" style="color:var(--text-muted);text-decoration:none;font-size:13px;transition:color .2s" onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Golden Template</a>
+  </div>
+  <div class="footer-line">Built with <span>♥</span> for aspiring AI engineers &nbsp;·&nbsp; Keep prompting, keep learning</div>
+</footer>
+
+</div><!-- /main -->
+
+<script>
+/* ── PARTICLES ── */
+(function(){
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouse = {x:-999,y:-999};
+
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
+
+  const colors = ['#00f5ff','#b44fff','#00ff88','#ff6b35','#ff2d78'];
+  class Particle {
+    constructor(){
+      this.x = Math.random()*W;
+      this.y = Math.random()*H;
+      this.vx = (Math.random()-.5)*.4;
+      this.vy = (Math.random()-.5)*.4;
+      this.r = Math.random()*2+.5;
+      this.color = colors[Math.floor(Math.random()*colors.length)];
+      this.alpha = Math.random()*.4+.1;
+    }
+    update(){
+      this.x += this.vx; this.y += this.vy;
+      if(this.x<0||this.x>W) this.vx*=-1;
+      if(this.y<0||this.y>H) this.vy*=-1;
+    }
+    draw(){
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+  for(let i=0;i<80;i++) particles.push(new Particle());
+
+  function drawLines(){
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<120){
+          ctx.save();
+          ctx.globalAlpha=(.1*(1-dist/120));
+          ctx.strokeStyle='#00f5ff';
+          ctx.lineWidth=.5;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }
+  }
+
+  function animate(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p=>{p.update();p.draw();});
+    drawLines();
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* ── SCROLL PROGRESS ── */
+window.addEventListener('scroll',()=>{
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop/(doc.scrollHeight-doc.clientHeight);
+  document.getElementById('progress').style.width=(scrolled*100)+'%';
+});
+
+/* ── REVEAL ON SCROLL ── */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+/* ── ACTIVE NAV ── */
+const sections = document.querySelectorAll('section[id], div[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const navObserver = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if(link) link.classList.add('active');
+    }
+  });
+},{rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>navObserver.observe(s));
+
+/* ── HAMBURGER ── */
+function toggleNav(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+document.querySelectorAll('.nav-link').forEach(l=>{
+  l.addEventListener('click',()=>{
+    if(window.innerWidth<=960){
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    }
+  });
+});
+
+/* ── COPY CODE BLOCKS ── */
+function copyCode(btn){
+  const content = btn.closest('.code-block').querySelector('.code-content').innerText;
+  navigator.clipboard.writeText(content).then(()=>showToast());
+}
+
+/* ── COPY GOLDEN TEMPLATE ── */
+function copyGoldenTemplate(){
+  const template = `[ROLE] Act as a [job title / expert persona]. You are highly experienced in [domain / field] and always provide practical, actionable advice.
+
+[TASK] Your task is to [clearly describe what needs to be done]. Be thorough and address all aspects of the request.
+
+[CONTEXT] Here is the relevant background information: [user's situation, data, or document content]. My audience is [target reader]. The purpose is [why this is needed].
+
+[INSTRUCTIONS] Follow these specific guidelines: [list of do's and don'ts, tone requirements, length limits, specific requirements]. Ensure each point is covered sequentially.
+
+[OUTPUT FORMAT] Respond in the following format: [numbered list / table / JSON / markdown / plain text / specific template]. Keep the response under [word/character limit].
+
+[CONSTRAINTS] Important constraints to respect: [language restrictions, what NOT to include, assumptions to avoid, safety or ethical boundaries].`;
+  navigator.clipboard.writeText(template).then(()=>showToast());
+}
+
+/* ── SCENARIO ACCORDION ── */
+function toggleScenario(id){
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+/* ── SCENARIO FILTER TABS ── */
+function filterScenario(cat, btn){
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.scenario-card').forEach(card=>{
+    if(cat==='all' || card.dataset.cat===cat){
+      card.style.display='';
+    } else {
+      card.style.display='none';
+    }
+  });
+}
+
+/* ── TOAST ── */
+function showToast(){
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+</script>
+</body>
+</html>

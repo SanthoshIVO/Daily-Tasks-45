@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PromptCraft — Learn Prompt Engineering</title>
+  <meta name="description" content="A complete prompt engineering course from beginner to advanced. Learn how to communicate with AI systems effectively." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+</head>
+<body>
+
+  <div class="app-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+
+      <a class="sidebar-logo" onclick="navigateTo('home')" href="#" style="text-decoration:none;">
+        <div class="logo-badge">
+          <div class="logo-icon">⚡</div>
+          <div class="logo-text">
+            PromptCraft
+            <span>Prompt Engineering Course</span>
+          </div>
+        </div>
+      </a>
+
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- built by JS -->
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="progress-label">
+          <span>Course Progress</span>
+          <span>0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ── OVERLAY (mobile) ── -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- ── MAIN ── -->
+    <main class="main-content">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-breadcrumb">
+          PromptCraft
+          <span class="sep">/</span>
+          <span id="breadcrumb">Home</span>
+        </div>
+        <div class="topbar-actions">
+          <div class="search-bar" title="Navigate using the sidebar">
+            <span>🔍</span>
+            Navigate
+            <kbd>←→</kbd>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content (rendered by JS) -->
+      <div id="page-content">
+        <!-- Content injected by app.js -->
+        <div style="padding:80px;text-align:center;color:var(--text3);">
+          <div style="font-size:48px;margin-bottom:16px;">⚡</div>
+          <div>Loading course...</div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="js/app.js"></script>
+
+</body>
+</html>
