@@ -5,8 +5,14 @@ load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 stream = client.chat.completions.create(
-    messages=[{"role": "user", "content": "Write a short haiku about coding."}],
-    model="llama-3.1-8b-instant",
+    messages=[{
+        "role": "user",
+        "content": (
+            # "Explain AI, machine learning, deep learning, and generative AI simply,  print the response + token usage"
+            "Explain Promt Engieering  with all 8 types of prompt engineering, print the response + token usage"
+        ),
+    }],
+    model="qwen/qwen3.8-27b",
     stream=True,
 )
 

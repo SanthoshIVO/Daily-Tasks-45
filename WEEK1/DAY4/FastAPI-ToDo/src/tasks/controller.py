@@ -57,12 +57,5 @@ def delete_task(task_id:int,db:session, user:UserModel):
     if not one_task:
         raise HTTPException(404, detail= "task id is incorrect")
 
-    if one_task.user_id != user.id:
-        raise HTTPException(404, detail= "You are not allowed to delete the task")
-
-
-
-    db.delete(one_task)
-    db.commit()
 
     return None

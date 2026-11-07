@@ -9,7 +9,7 @@ DAY7.venv/
 DAY8.venv/
 DAY9.venv/
 DAY10.venv/
-
+.env
 .python-env/
 **/node_modules/
 
