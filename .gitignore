@@ -1,16 +1,38 @@
+# Virtual Environments
 .venv/
-DAY1.venv/
-DAY2.venv/
-DAY3.venv/
-DAY4.venv/
-DAY5.venv/
-DAY6.venv/
-DAY7.venv/
-DAY8.venv/
-DAY9.venv/
-DAY10.venv/
-.env
-.python-env/
-**/node_modules/
+**/*.venv/
+venv/
+ENV/
+env/
 
-.__pycache__
+# Environment Variables
+.env
+*.env
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Postman
+.postman/
+*.postman_collection.json
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS Files
+Thumbs.db
+.DS_Store
+
+# Specific file types to avoid (as requested)
+*.txt
+*.pdf
+
+# Logs and Cache
+*.log
+.cache/
+**/__pycache__/
